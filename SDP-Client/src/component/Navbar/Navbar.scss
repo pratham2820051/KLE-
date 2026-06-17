@@ -1,0 +1,243 @@
+.navbar-div{
+
+  font-size: 16px;
+ .navbar{ 
+  position: fixed;
+  width: 100vw; 
+  padding-bottom: 0px;
+  padding-top: 0px;
+  background-color: var(--white);
+  -webkit-box-shadow: 0px 1px 5px var(--black);
+  -moz-box-shadow:    0px 1px 5px var(--black);
+  box-shadow:         0px 1px 5px var(--black);
+  z-index: 2000;
+}
+
+.navbar-brand{
+  padding: 6px 10px;
+  img{
+    height: 2em;
+  }
+}
+
+  .container-fluid{
+    width: 90%;
+  }
+
+  .nav-item{
+    margin-right: 20px;
+  }
+
+  .nav-link{
+    padding: 1rem;
+    font-weight: 500;
+    font-size: 1.125em;
+    color: var(--gray4);
+    cursor: pointer;
+  }
+
+  .nav-link.active{
+    border-bottom: 3px solid var(--red);
+    color: var(--black2);
+    font-weight: 600;
+  }
+
+  .btn-login{
+    border: 1px solid var(--red);
+    color: var(--red);
+    margin-right: 20px;
+    padding: 3px 20px;
+    border-radius: 10px;
+    font-weight: 500;
+    font-size: 1.125em;
+  }
+
+  .btn-register{
+    background-color: var(--red);
+    color: var(--white);
+    padding: 3px 20px;
+    border-radius: 10px;
+    font-weight: 500;
+    margin: 0 10px;
+    font-size: 1.125em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    i{
+      margin-right: 10px;
+    }
+  }
+  
+
+
+
+  .buttons{
+    display: flex;
+}
+
+  @media only screen and (max-width: 1280px) {
+    font-size: 12px !important;
+  }
+  @media only screen and (max-width: 1024px) {
+    font-size: 10px !important;
+  }
+  @media only screen and (max-width: 1600px) {
+    font-size: 13px;
+  }
+
+  @media only screen and (max-width: 600px) {
+    .navbar-collapse{
+      margin-bottom: 20px;
+    }
+
+    .navbar{
+      padding: 5px 0;
+    }
+
+    
+
+    .btn-register{
+      margin: 10px;
+    }
+
+      .container-fluid{
+        width: 100% !important;
+
+        .navbar-brand{
+          padding: 0 !important;
+          margin: 0;
+          font-size: 1.25em;
+        }
+      }
+
+  }
+
+  &.dashboard-navbar {
+    .navbar {
+      width: calc(100vw - 260px);
+      left: 260px;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      border-bottom: 1px solid #e2e8f0;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      height: 54px;
+      padding: 0 20px;
+      background-color: var(--white);
+      .container-fluid {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+    }
+    
+    &.sidebar-closed {
+      .navbar {
+        width: calc(100vw - 78px);
+        left: 78px;
+      }
+    }
+
+    @media only screen and (max-width: 768px) {
+      .navbar {
+        width: calc(100vw - 78px) !important;
+        left: 78px !important;
+      }
+    }
+  }
+
+  .btn-login-home {
+    background: transparent;
+    border: 1px solid var(--red);
+    color: var(--red);
+    padding: 4px 14px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    
+    &:hover {
+      background: rgba(0, 59, 122, 0.05);
+      border-color: #002a5c;
+      color: #002a5c;
+    }
+  }
+
+  .btn-login-home-landing {
+    background: transparent;
+    border: 1px solid var(--red);
+    color: var(--red);
+    padding: 6px 20px;
+    border-radius: 10px;
+    font-weight: 500;
+    font-size: 1.125em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin: 0 5px;
+
+    i {
+      font-size: 1.2rem;
+    }
+
+    &:hover {
+      background: rgba(0, 59, 122, 0.05);
+      border-color: #002a5c;
+      color: #002a5c;
+    }
+  }
+
+  .btn-logout-landing {
+    background-color: var(--red);
+    color: var(--white);
+    padding: 6px 20px;
+    border-radius: 10px;
+    font-weight: 500;
+    font-size: 1.125em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin: 0 5px;
+    border: 1px solid var(--red);
+
+    i {
+      font-size: 1.2rem;
+    }
+
+    &:hover {
+      background-color: #002a5c;
+      border-color: #002a5c;
+      color: var(--white);
+    }
+  }
+
+  .btn-logout-dash {
+    background: var(--red);
+    border: 1px solid var(--red);
+    color: var(--white);
+    padding: 4px 14px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: #002a5c;
+      border-color: #002a5c;
+    }
+  }
+}
+

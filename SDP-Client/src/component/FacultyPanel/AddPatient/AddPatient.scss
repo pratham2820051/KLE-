@@ -1,0 +1,210 @@
+.basic-info {
+  width: 60%;
+  margin: auto;
+  padding: 30px 0;
+  max-width: 100vw;
+  overflow-x: hidden;
+
+  .header {
+    h2 {
+      color: var(--green);
+    }
+  }
+
+  .complaints {
+    border: solid 1px var(--gray4);
+    padding: 20px;
+  }
+
+  .complaints-table {
+    border: solid 1px var(--green);
+    padding: 20px;
+  }
+
+  @media only screen and (max-width: 1280px) {
+    font-size: 12px !important;
+  }
+  @media only screen and (max-width: 1024px) {
+    font-size: 10px !important;
+  }
+  @media only screen and (max-width: 1600px) {
+    font-size: 13px;
+  }
+
+  @media only screen and (max-width: 600px) {
+    width: 80%;
+  }
+}
+
+.prediction-buttons {
+  padding-top: 40px;
+  padding-bottom: 20px;
+  width: 80%;
+  margin-left: 22%;
+  display: flex;
+  flex-direction: column;
+
+  button {
+    padding: 5px 15px;
+    border-radius: 5px;
+    //   margin: 8px;
+    background-color: var(--green);
+    border: 0;
+    color: white;
+    width: 20%;
+    margin-bottom: 8px;
+    margin-right: 8px;
+  }
+
+  .patient-list button {
+    margin-left: 100px;
+  }
+}
+
+//INPUT
+.form-control {
+  font-size: 1em;
+  font-weight: 500;
+  color: #11263c;
+  box-shadow: none !important;
+  outline: none;
+  border-radius: 0.625em;
+  border: 1px solid var(#f8f8f8);
+}
+.form-textbox {
+  height: 8.5em;
+}
+.input-lebel {
+  font-size: 1.125em;
+  font-weight: 500;
+  color: var(--black2);
+  margin-bottom: 0.313em;
+}
+
+.input-lebel2 {
+  font-family: Dax;
+  font-size: 1.125em;
+  font-weight: 700;
+  color: var(--black3);
+  margin-bottom: 0.313em;
+}
+
+.input-lebel3 {
+  font-size: 1.125em;
+  font-weight: 700;
+  color: #11263c;
+}
+
+.input-group {
+  border: 1px solid #f8f8f8;
+  border-radius: 10px;
+}
+.react-datepicker-wrapper {
+  flex: 1;
+  height: 100%;
+}
+.react-datepicker__input-container {
+  height: 100%;
+}
+
+.input-group span {
+  background-color: transparent;
+  border: none;
+  font-size: 1.25em;
+  font-weight: 700;
+}
+
+.input-group span img {
+  width: 1.125em;
+}
+
+.input-group input {
+  border: none;
+  outline: none;
+  background-color: transparent;
+  box-shadow: none;
+  height: 2.5em;
+  font-size: 1.125em;
+  color: #11263c;
+  font-weight: 500;
+  width: inherit;
+}
+
+.form-control::placeholder,
+.input-group input::placeholder {
+  /* Chrome, Firefox, Opera, Safari 10.1+ */
+  color: #9398a1;
+  font-size: 1em;
+  font-weight: 500;
+  opacity: 1; /* Firefox */
+}
+
+.form-control:-ms-input-placeholder,
+.input-group input::placeholder {
+  /* Internet Explorer 10-11 */
+  color: #9398a1;
+  font-size: 1em;
+  font-weight: 500;
+}
+
+.form-control::-ms-input-placeholder,
+.input-group input::placeholder {
+  /* Microsoft Edge */
+  color: #9398a1;
+  font-size: 1em;
+  font-weight: 500;
+}
+
+.form_buttons {
+  display: flex;
+  margin: 1.25em 0px !important;
+  justify-content: center;
+}
+
+.form_buttons button {
+  background-color: rgba(0, 59, 122, 0.15);
+  color: var(--green);
+  border: 0px;
+  outline: none;
+  padding: 5px 20px;
+  font-family: Dax;
+  font-size: 1.375em;
+  border-radius: 10px;
+  font-weight: 700;
+  margin-right: 20px;
+}
+
+.btn_form {
+  background-color: var(--green);
+  color: white;
+  white-space: nowrap;
+  border: 0px;
+  outline: none;
+  padding: 5px 20px;
+  font-family: Dax;
+  font-size: 1.125em;
+  border-radius: 10px;
+  font-weight: 700;
+  margin-right: 20px;
+}
+
+.form-select {
+  border-radius: 10px;
+  border: 1px solid var(--gray5);
+  font-size: 1em;
+  font-weight: 500;
+  color: #11263c;
+  box-shadow: none;
+}
+
+.form_buttons input {
+  background-color: var(--green);
+  color: #ffffff;
+  border: 0px;
+  outline: none;
+  padding: 5px 20px;
+  font-family: Dax;
+  border-radius: 0.625em;
+  font-size: 1.375em;
+  font-weight: 700;
+}

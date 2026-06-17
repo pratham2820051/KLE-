@@ -1,0 +1,230 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+// Shared admin table styles
+// Palette: bg #f8fafc, cards #fff, border #e2e8f0, accent #003b7a, text #0f172a
+
+.content {
+  padding: 28px 36px;
+  font-family: 'Inter', sans-serif;
+
+  .header {
+    padding: 0 0 24px 0;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    h4 {
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #0f172a;
+      letter-spacing: -0.3px;
+      flex: 1;
+    }
+  }
+
+  .buttons {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+}
+
+.header h4 {
+  color: #0f172a !important;
+}
+
+// ── Buttons ────────────────────────────────────────────────────────────────
+.edit-btn {
+  background: transparent;
+  border: 1px solid #e2e8f0;
+  color: #64748b;
+  font-size: 16px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    background: #e8f0fe;
+    border-color: #b3c8f0;
+    color: #003b7a;
+  }
+}
+
+.add-btn {
+  background: #003b7a;
+  color: #ffffff;
+  border: none;
+  outline: none;
+  padding: 9px 20px;
+  border-radius: 10px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  white-space: nowrap;
+
+  &:hover {
+    background: #002a5c;
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+// ── Table ─────────────────────────────────────────────────────────────────
+.table-div {
+  overflow-x: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  border-radius: 12px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+
+  &::-webkit-scrollbar { display: none; }
+
+  .table {
+    margin: 0;
+    border-collapse: collapse;
+    width: 100%;
+    min-width: 500px;
+  }
+}
+
+.table-header {
+  background: #001f4d;    // same slate-950 as sidebar
+
+  tr th {
+    padding: 14px 16px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: #94a3b8;
+    border: none;
+    white-space: nowrap;
+
+    &:first-child {
+      border-radius: 12px 0 0 0;
+      padding-left: 22px;
+    }
+
+    &:last-child {
+      border-radius: 0 12px 0 0;
+      padding-right: 22px;
+    }
+  }
+}
+
+.table-body {
+  tr {
+    border-bottom: 1px solid #f1f5f9;
+    transition: background 0.15s ease;
+
+    &:last-child { border-bottom: none; }
+    &:hover { background: #e8f0fe; }
+
+    th[scope="row"] {
+      padding: 13px 16px 13px 22px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #003b7a;
+      vertical-align: middle;
+      border: none;
+      font-family: 'Inter', sans-serif;
+    }
+
+    td {
+      padding: 13px 16px;
+      font-size: 0.88rem;
+      font-weight: 500;
+      color: #334155;
+      vertical-align: middle;
+      border: none;
+
+      &:last-child {
+        padding-right: 22px;
+        text-align: right;
+      }
+
+      p {
+        margin: 0;
+        font-size: 0.88rem;
+        font-weight: 500;
+        color: #334155;
+      }
+    }
+  }
+}
+
+// ── Admin Patient Search ───────────────────────────────────────────────────
+.input-wrap {
+  display: flex;
+  align-items: center;
+  height: 38px;
+  padding: 0 12px;
+  border-radius: 9px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  gap: 8px;
+  transition: border-color 0.2s ease;
+
+  &:focus-within {
+    border-color: #003b7a;
+    background: #fff;
+  }
+
+  i {
+    color: #94a3b8;
+    font-size: 0.82rem;
+    cursor: pointer;
+    transition: color 0.2s;
+
+    &.fa-times:hover { color: #003b7a; }
+  }
+
+  #product-search {
+    border: none;
+    background: transparent;
+    outline: none;
+    color: #0f172a;
+    font-size: 0.85rem;
+    font-weight: 400;
+    padding: 0;
+    height: 100%;
+    min-width: 150px;
+
+    &::placeholder {
+      color: #94a3b8;
+    }
+  }
+}
+
+#input-label { display: none; }
+.fa-times:hover { cursor: pointer; }
+
+@media only screen and (max-width: 768px) {
+  .content { padding: 16px; }
+}
+
+// ── Delete Button ──────────────────────────────────────────────────────────
+.delete-btn {
+  &:hover {
+    background: #fff0f0 !important;
+    border-color: #fecaca !important;
+    color: #dc2626 !important;
+  }
+}

@@ -1,0 +1,98 @@
+// Topbar — light header bar for faculty pages
+// Palette: white bg, slate border, crimson accent
+
+.topbar {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  background: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+  height: 52px;
+  padding: 0 20px;
+
+  .dropdown {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+
+    .dropdown-menu {
+      z-index: 10000;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+      border-radius: 10px;
+      padding: 0.4rem;
+
+      li {
+        padding: 2px 0;
+        display: block !important;
+
+        .dropdown-item {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          border-radius: 7px;
+          padding: 7px 12px;
+          font-size: 0.85rem;
+          cursor: pointer;
+          background: transparent;
+          border: none;
+          width: 100%;
+          text-align: left;
+          transition: background 0.15s ease;
+          font-family: 'Inter', sans-serif;
+          color: #334155;
+
+          &.active {
+            background: #003b7a;
+            color: #ffffff;
+          }
+
+          &:hover:not(.active) {
+            background: #f8fafc;
+            color: #0f172a;
+          }
+
+          img {
+            width: 20px !important;
+            height: 14px;
+            object-fit: cover;
+            border-radius: 2px;
+          }
+        }
+      }
+    }
+  }
+
+  .btn-register {
+    background: #e8f0fe;
+    border: 1px solid #b3c8f0;
+    color: #003b7a;
+    padding: 5px 14px;
+    border-radius: 8px;
+    font-weight: 600;
+    margin: 0;
+    font-size: 0.82rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    transition: all 0.2s ease;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+
+    i {
+      font-size: 0.95rem;
+      margin: 0;
+    }
+
+    &:hover {
+      background: #b3c8f0;
+      border-color: #b3c8f0;
+      color: #002a5c;
+    }
+
+    &::after {
+      border-top-color: #003b7a;
+    }
+  }
+}

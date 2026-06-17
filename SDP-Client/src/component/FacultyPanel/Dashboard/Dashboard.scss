@@ -1,0 +1,283 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+// ── Faculty Dashboard — Light Theme ─────────────────────────────────────────
+// Background:  #f1f5f9  (slate-100, warm light gray)
+// Cards:       #ffffff
+// Header bar:  #ffffff with bottom border
+// Accent:      #003b7a  (brand crimson)
+// Text:        #0f172a  (slate-950) / #64748b (slate-500)
+
+.patientData {
+  min-height: 100vh;
+  background: #f1f5f9;
+  font-family: 'Inter', sans-serif;
+
+  // ── Top Header Bar ─────────────────────────────────────────────────────────
+  > .header {
+    width: 100%;
+    height: 62px;
+    background: #ffffff;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    padding: 0 5%;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+
+    .brand-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+
+      span {
+        color: #003b7a;
+      }
+    }
+
+    i {
+      font-size: 20px;
+      cursor: pointer;
+      color: #94a3b8;
+      padding: 7px;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+
+      &:hover {
+        color: #003b7a;
+        background: #e8f0fe;
+      }
+    }
+  }
+
+  // ── Patient List ────────────────────────────────────────────────────────────
+  .patient-list {
+    width: 86%;
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 32px 0 60px;
+
+    .header {
+      width: 100%;
+      margin: 0 0 20px 0;
+      padding: 0;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 14px;
+
+      h6 {
+        margin: 0;
+        font-size: 1.35rem;
+        font-weight: 700;
+        color: #0f172a;
+        letter-spacing: -0.3px;
+      }
+    }
+  }
+
+  // ── Patient Card ────────────────────────────────────────────────────────────
+  .patient {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 14px 18px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    animation: fadeInUp 0.3s ease both;
+
+    &:hover {
+      border-color: #b3c8f0;
+      box-shadow: 0 4px 16px rgba(0, 59, 122, 0.07);
+      transform: translateY(-1px);
+    }
+
+    // Avatar initials
+    .patient-avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      background: #e8f0fe;
+      border: 1px solid #b3c8f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #003b7a;
+      margin-right: 14px;
+      flex-shrink: 0;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    p {
+      margin: 0;
+      flex: 1;
+
+      strong {
+        color: #0f172a;
+        font-weight: 600;
+        font-size: 0.9rem;
+        display: block;
+        margin-bottom: 3px;
+      }
+
+      .meta {
+        font-size: 0.76rem;
+        color: #94a3b8;
+        font-weight: 400;
+      }
+    }
+
+    .controls {
+      margin-left: auto;
+      display: flex;
+      gap: 6px;
+
+      button {
+        width: 34px;
+        height: 34px;
+        padding: 0;
+        margin: 0;
+        border: 1px solid #e2e8f0;
+        background: #f8fafc;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        i {
+          color: #94a3b8;
+          font-size: 14px;
+        }
+
+        &:hover {
+          background: #e8f0fe;
+          border-color: #b3c8f0;
+
+          i { color: #003b7a; }
+        }
+      }
+    }
+  }
+
+  // Empty state
+  .no-patient {
+    text-align: center;
+    padding: 80px 20px;
+    color: #94a3b8;
+    font-size: 0.9rem;
+    font-weight: 500;
+
+    &::before {
+      content: '👤';
+      display: block;
+      font-size: 2.5rem;
+      margin-bottom: 12px;
+      opacity: 0.5;
+    }
+  }
+
+  @media only screen and (max-width: 768px) {
+    .patient-list { width: 94%; }
+  }
+}
+
+// ── Add Patient Button ──────────────────────────────────────────────────────
+.buttons1 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+
+  button {
+    height: 40px;
+    padding: 0 18px;
+    width: auto !important;
+    background: #003b7a;
+    border: none;
+    border-radius: 10px;
+    color: #fff;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.15s ease;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    white-space: nowrap;
+
+    &:hover {
+      background: #002a5c;
+      transform: translateY(-1px);
+    }
+
+    &:active { transform: translateY(0); }
+  }
+}
+
+// ── Search Bar ─────────────────────────────────────────────────────────────
+.input-wrap1 {
+  display: flex;
+  align-items: center;
+  height: 40px;
+  padding: 0 13px;
+  border-radius: 10px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  gap: 8px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  min-width: 200px;
+
+  &:focus-within {
+    border-color: #003b7a;
+    box-shadow: 0 0 0 3px rgba(0, 59, 122, 0.08);
+    background: #fff;
+  }
+
+  i {
+    color: #94a3b8;
+    font-size: 0.82rem;
+    display: flex;
+    align-items: center;
+
+    &.fa-times {
+      cursor: pointer;
+      transition: color 0.2s;
+      &:hover { color: #003b7a; }
+    }
+  }
+}
+
+#product-search {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #0f172a;
+  font-size: 0.85rem;
+  font-weight: 400;
+  padding: 0;
+  height: 100%;
+  flex: 1;
+
+  &::placeholder {
+    color: #94a3b8;
+  }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

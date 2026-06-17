@@ -1,0 +1,481 @@
+.kle-home {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Roboto', sans-serif;
+  background: #f5f7fa;
+}
+
+/* ── Header ── */
+.kle-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: rgba(255, 255, 255, 0.97);
+  border-bottom: 1px solid #e2e8f0;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.07);
+  backdrop-filter: blur(10px);
+
+  &__inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 24px;
+    height: 72px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  &__logo {
+    height: 52px;
+    width: auto;
+    flex-shrink: 0;
+    object-fit: contain;
+  }
+
+  &__title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #003b7a;
+    flex: 1;
+    text-align: center;
+  }
+}
+
+/* ── Hero ── */
+.kle-hero {
+  position: relative;
+  height: 100vh;
+  min-height: 600px;
+  display: flex;
+  align-items: center;
+  padding-top: 72px;
+  overflow: hidden;
+
+  &__bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+  }
+
+  &__overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(0, 30, 80, 0.72) 0%, rgba(0, 59, 122, 0.55) 100%);
+    z-index: 1;
+  }
+
+  &__content {
+    position: relative;
+    z-index: 2;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 48px 24px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    box-sizing: border-box;
+
+    @media (max-width: 768px) {
+      flex-direction: column;
+      padding: 32px 16px;
+      align-items: stretch;
+    }
+  }
+
+  &__text {
+    flex: 1;
+    color: #fff;
+
+    h1 {
+      font-size: 2.6rem;
+      font-weight: 800;
+      line-height: 1.2;
+      text-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+      margin: 0;
+
+      @media (max-width: 768px) {
+        font-size: 1.8rem;
+        text-align: center;
+      }
+    }
+  }
+}
+
+/* ── Login Card ── */
+.kle-login-card {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 16px;
+  padding: 32px;
+  width: 380px;
+  flex-shrink: 0;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+  box-sizing: border-box;
+
+  @media (max-width: 900px) {
+    width: 340px;
+  }
+
+  @media (max-width: 768px) {
+    width: 100%;
+  }
+
+  h2 {
+    color: #003b7a;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0 0 20px 0;
+    background: rgba(255,255,255,0.9);
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 6px;
+  }
+}
+
+.kle-field {
+  margin-bottom: 14px;
+
+  label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 5px;
+  }
+
+  input {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 0.92);
+    font-size: 0.95rem;
+    outline: none;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+
+    &:focus {
+      border-color: #003b7a;
+      box-shadow: 0 0 0 2px rgba(0, 59, 122, 0.2);
+    }
+  }
+
+  &__input-wrap {
+    position: relative;
+
+    input { padding-right: 42px; }
+  }
+}
+
+.kle-eye-btn {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #555;
+  font-size: 1.1rem;
+  padding: 0;
+  line-height: 1;
+}
+
+.kle-field-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.kle-remember {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  color: #fff;
+  font-size: 0.85rem;
+
+  input { width: auto; margin: 0; }
+}
+
+.kle-forgot {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #ffe082;
+  text-decoration: none;
+
+  &:hover { text-decoration: underline; }
+}
+
+.kle-signin-btn {
+  width: 100%;
+  padding: 14px;
+  background: #003b7a;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+
+  &:hover { background: #00509e; }
+  &:active { transform: scale(0.98); }
+}
+
+/* ── Leadership ── */
+.kle-leadership {
+  background: #fff;
+  padding: 60px 24px;
+
+  h2 {
+    text-align: center;
+    font-size: 1.9rem;
+    font-weight: 700;
+    color: #003b7a;
+    margin: 0 0 40px 0;
+  }
+
+  &__grid {
+    max-width: 960px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+      max-width: 360px;
+    }
+  }
+}
+
+.kle-leader-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  background: #f8faff;
+  border-radius: 16px;
+  padding: 28px 20px;
+  box-shadow: 0 4px 20px rgba(0, 59, 122, 0.07);
+  transition: transform 0.25s;
+
+  &:hover { transform: translateY(-6px); }
+
+  &__img-wrap {
+    position: relative;
+    margin-bottom: 16px;
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: -4px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #003b7a, #00b4d8);
+      opacity: 0.2;
+      transition: opacity 0.25s;
+    }
+
+    img {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 4px solid #fff;
+      position: relative;
+    }
+  }
+
+  &:hover &__img-wrap::before { opacity: 1; }
+
+  &__placeholder {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    background: #e8f0fe;
+    border: 4px solid #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+
+    i {
+      font-size: 4rem;
+      color: #003b7a;
+    }
+  }
+
+  h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #003b7a;
+    margin: 0 0 6px 0;
+  }
+
+  p {
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #00509e;
+    margin: 0;
+  }
+}
+
+/* ── Footer ── */
+.kle-footer {
+  background: #3b3d7d;
+  color: #fff;
+  text-align: center;
+  padding: 12px 24px;
+  font-size: 0.85rem;
+  margin-top: auto;
+}
+
+/* ── Forgot Password Button ── */
+.kle-forgot-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #ffe082;
+  padding: 0;
+
+  &:hover { text-decoration: underline; }
+}
+
+/* ── Modal ── */
+.kle-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.kle-modal {
+  background: #fff;
+  border-radius: 16px;
+  padding: 32px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+
+    h3 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #003b7a;
+      margin: 0;
+    }
+  }
+
+  &__close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.5rem;
+    color: #64748b;
+    padding: 0;
+    line-height: 1;
+
+    &:hover { color: #003b7a; }
+  }
+
+  &__desc {
+    font-size: 0.9rem;
+    color: #64748b;
+    margin: 0 0 20px 0;
+    line-height: 1.5;
+  }
+
+  &__field {
+    margin-bottom: 18px;
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #334155;
+      margin-bottom: 6px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 8px;
+      border: 1px solid #cbd5e1;
+      font-size: 0.95rem;
+      outline: none;
+      box-sizing: border-box;
+      transition: border-color 0.2s;
+
+      &:focus {
+        border-color: #003b7a;
+        box-shadow: 0 0 0 2px rgba(0, 59, 122, 0.15);
+      }
+    }
+  }
+
+  &__btn {
+    width: 100%;
+    padding: 13px;
+    background: #003b7a;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s;
+
+    &:hover { background: #00509e; }
+    &:disabled { opacity: 0.7; cursor: not-allowed; }
+  }
+}
+
+/* ── Session / Logged-in card ── */
+.kle-session-msg {
+  color: #fff;
+  font-size: 0.9rem;
+  margin: 0 0 20px 0;
+  opacity: 0.9;
+}
+
+.kle-logout-link {
+  display: block;
+  width: 100%;
+  margin-top: 12px;
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.9rem;
+  padding: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+  }
+}

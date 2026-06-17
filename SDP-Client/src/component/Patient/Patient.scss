@@ -1,0 +1,30 @@
+// Patient component overrides (complements Location.scss)
+
+.add-btn {
+  border-radius: 12px;
+  margin-right: 0;
+  margin-bottom: 0;
+}
+
+.header {
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.buttons {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+// Override the search input position for admin patient list
+.input-wrap {
+  margin-left: 0 !important;
+  height: 42px;
+}
+
+.fa-times:hover {
+  cursor: pointer;
+}

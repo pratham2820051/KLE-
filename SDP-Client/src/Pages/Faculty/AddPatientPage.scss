@@ -1,0 +1,22 @@
+.add-patient {
+  max-width: 100vw;
+  overflow-x: hidden;
+  min-height: 100vh;
+  background: #f0f2f8;
+
+  .header {
+    background: #ffffff;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+
+    i {
+      color: var(--green) !important;
+      transition: all 0.25s ease;
+
+      &:hover {
+        transform: scale(1.1) translateX(-2px);
+        color: #002a5c !important;
+      }
+    }
+  }
+}
