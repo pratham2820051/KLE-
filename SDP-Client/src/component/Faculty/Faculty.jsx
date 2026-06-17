@@ -133,7 +133,7 @@ function Category({ setLoading, faculty, setTrigger }) {
                         <p>{translatedData.translatedName || data.name}</p>
                       </td>
                       <td>
-                        <p>{translatedData.translatedRole || data.role}</p>
+                        <p>{translatedData.translatedRole || (data.role === "faculty" ? "Counsellor" : data.role === "nurse" ? "Nurse" : data.role)}</p>
                       </td>
                       <td>
                         <p>{translatedData.translatedEmail || data.email}</p>

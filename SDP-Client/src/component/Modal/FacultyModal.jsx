@@ -91,22 +91,23 @@ function CategoryModal({ showModal, setShowModal, data, setData, setTrigger }) {
   };
 
   const handleUpdate = async () => {
-    const obj = {
-      name,
-      email,
-      password,
-      role,
-    };
+    if (!name || !email) {
+      toast.error("Please fill all required fields");
+      return;
+    }
+    const obj = { name, email, role };
+    if (password) obj.password = password;
 
     await axios
-      .put(`${ADD_FACULTY}/${data.id}`, obj, { headers: headers })
-      .then((res) => {
-        toast.error("Some error occured");
+      .put(`${ADD_FACULTY}/${data._id}`, obj, { headers })
+      .then(() => {
+        toast.success("Counsellor updated successfully");
         setTrigger((prev) => !prev);
+        closeModal();
       })
       .catch((err) => {
         console.log(err);
-        toast.error("some error occured");
+        toast.error(err.response?.data?.message || "Update failed");
       });
   };
 
@@ -119,6 +120,7 @@ function CategoryModal({ showModal, setShowModal, data, setData, setTrigger }) {
 
   const closeModal = () => {
     close();
+    setData(null);
     setShowModal((prev) => !prev);
   };
 
@@ -140,7 +142,7 @@ function CategoryModal({ showModal, setShowModal, data, setData, setTrigger }) {
         <div className="modal" onClick={closeModal}>
           <div className="modal_content" onClick={(e) => e.stopPropagation()}>
             <div className="modal_top">
-              <h2>Add Counsellor</h2>
+              <h2>{data ? "Edit Counsellor" : "Add Counsellor"}</h2>
               <button onClick={closeModal}>✕</button>
             </div>
             <hr />

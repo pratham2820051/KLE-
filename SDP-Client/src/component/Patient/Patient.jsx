@@ -1,17 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-
 import "./Patient.scss";
 import "../Location/Location.scss";
-
 import { useLanguage } from "../../context/LanguageContext";
 import { t } from "../../translations";
-
 import * as XLSX from "xlsx/xlsx.mjs";
-
-/* load the codepage support library for extended support with older formats  */
 import { set_cptable } from "xlsx";
 import * as cptable from "xlsx/dist/cpexcel.full.mjs";
+import { printPatientPDF } from "../../utils/printPatient";
+import { formatPatientId } from "../../utils/patientId";
 
 set_cptable(cptable);
 
@@ -126,9 +123,11 @@ function Patient({ setLoading, camp, patient, faculty }) {
     if (!data || !data.name) return false;
     const translatedData = translatedPatients?.find(tp => tp._id === data._id) || data;
     const nameToSearch = (translatedData.translatedName || data.name || '');
-    // Check if nameToSearch exists before calling toLowerCase()
     if (!nameToSearch) return false;
-    if (searchQuery && !nameToSearch.toLowerCase().includes(searchQuery.toLowerCase())) return false;
+    const query = searchQuery.toLowerCase();
+    if (searchQuery && !nameToSearch.toLowerCase().includes(query) &&
+        !formatPatientId(data.patientId).toLowerCase().includes(query) &&
+        !String(data.patientId).includes(query)) return false;
     return true;
   }) : [];
 
@@ -201,7 +200,7 @@ function Patient({ setLoading, camp, patient, faculty }) {
               patient.map((data, key) => {
                 return (
                   <tr>
-                    <th scope="row">{data.patientId}</th>
+                    <th scope="row">{formatPatientId(data.patientId)}</th>
                     <td>
                       <p>
                         {faculty?.map((d, k) => {
@@ -237,7 +236,7 @@ function Patient({ setLoading, camp, patient, faculty }) {
         <table className="table">
           <thead className="table-header">
             <tr>
-              <th scope="col">{t('patientId', language)}</th>
+              <th scope="col">Patient ID</th>
               <th scope="col">{t('counsellor', language)}</th>
               <th scope="col">{t('name', language)}</th>
               <th scope="col">{t('phone', language)}</th>
@@ -252,7 +251,7 @@ function Patient({ setLoading, camp, patient, faculty }) {
                 const translatedData = translatedPatients?.find(tp => tp._id === data._id) || data;
                 return (
                   <tr key={key}>
-                    <th scope="row">{data.patientId}</th>
+                    <th scope="row">{formatPatientId(data.patientId)}</th>
                     <td>
                       {(() => {
                         const matchingFaculty = faculty?.find(d => d._id === data.faculty);
@@ -274,12 +273,22 @@ function Patient({ setLoading, camp, patient, faculty }) {
                         : <span style={{ color: "#f59e0b", fontWeight: 600, fontSize: "0.75rem" }}>Admitted</span>}
                     </td>
                     <td>
-                      <button
-                        className="edit-btn"
-                        onClick={() => navigate(`/patient/${data._id}`)}
-                      >
-                        <i className="bi bi-eye"></i>
-                      </button>
+                      <div style={{ display: "flex", gap: "6px", justifyContent: "flex-end" }}>
+                        <button
+                          className="edit-btn"
+                          onClick={() => navigate(`/patient/${data._id}`)}
+                        >
+                          <i className="bi bi-eye"></i>
+                        </button>
+                        <button
+                          className="edit-btn"
+                          title="Download PDF"
+                          onClick={() => printPatientPDF(data)}
+                          style={{ color: "#dc2626" }}
+                        >
+                          <i className="bi bi-file-earmark-pdf"></i>
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 );

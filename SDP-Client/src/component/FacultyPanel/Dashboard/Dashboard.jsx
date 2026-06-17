@@ -1,75 +1,48 @@
 import React, { useEffect, useState } from "react";
-import "./Dashboard.scss";
-
+import "../../Dashboard.scss"; // reuse admin sidebar styles
+import "./Dashboard.scss";     // counsellor-specific overrides
 import axios from "axios";
-
 import { useNavigate } from "react-router";
 import { GET_USER_CAMP, BASE_URL, ADD_PATIENT } from "../../../utils/apiConstant";
 import { useLanguage } from "../../../context/LanguageContext";
 import { t } from "../../../translations";
 import klelogo from "../../../assets/logo.png";
-
+import Navbar from "../../Navbar/Navbar";
+import { printPatientPDF } from "../../../utils/printPatient";
+import { formatPatientId } from "../../../utils/patientId";
 
 function Dashboard() {
   const navigate = useNavigate();
   const { language } = useLanguage();
 
   const auth = localStorage.getItem("facultyAuth") || localStorage.getItem("auth");
+  const headers = { Authorization: `Bearer ${auth}` };
 
+  const [menuOpen, setMenuOpen] = useState(true);
+  const [selected, setSelected] = useState("dashboard");
   const [locationId, setLocationId] = useState();
   const [patientData, setPatients] = useState([]);
-  const [translatedPatients, setTranslatedPatients] = useState(null);
-
   const [searchQuery, setSearchQuery] = useState("");
-
-  const translateText = async (text, targetLang) => {
-    if (!text) return text;
-    try {
-      const response = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=${targetLang}&dt=t&q=${encodeURIComponent(text)}`);
-      const data = await response.json();
-      return data[0][0][0];
-    } catch (error) {
-      console.error('Translation error:', error);
-      return text;
-    }
-  };
-
-  const headers = {
-    Authorization: `Bearer ${auth}`,
-  };
+  const [statusFilter, setStatusFilter] = useState("all"); // "all" | "admitted" | "discharged"
 
   const getCamps = async () => {
-    await axios
-      .get(GET_USER_CAMP, { headers: headers })
-      .then((res) => {
-        if (res.data && res.data.data && res.data.data.length > 0) {
-          setLocationId(res.data.data[0].locationId);
-        } else {
-          // Fallback: use the default KLE location
-          axios.get(`${BASE_URL}/api/location`, { headers: headers })
-            .then(locRes => {
-              if (locRes.data?.data?.length > 0) {
-                setLocationId(locRes.data.data[0]._id);
-              }
-            })
-            .catch(() => {});
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    try {
+      const res = await axios.get(GET_USER_CAMP, { headers });
+      if (res.data?.data?.length > 0) {
+        setLocationId(res.data.data[0].locationId);
+      } else {
+        const locRes = await axios.get(`${BASE_URL}/api/location`, { headers });
+        if (locRes.data?.data?.length > 0) setLocationId(locRes.data.data[0]._id);
+      }
+    } catch (err) { console.log(err); }
   };
 
   const getPatients = async () => {
-    await axios
-      .get(ADD_PATIENT, { headers: headers })
-      .then((res) => {
-        setPatients(res.data.data);
-        localStorage.setItem("patients", JSON.stringify(res.data.data));
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    try {
+      const res = await axios.get(ADD_PATIENT, { headers });
+      setPatients(res.data.data || []);
+      localStorage.setItem("patients", JSON.stringify(res.data.data || []));
+    } catch (err) { console.log(err); }
   };
 
   useEffect(() => {
@@ -78,146 +51,231 @@ function Dashboard() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    if (language === 'kn' && patientData && patientData.length > 0) {
-      const translateData = async () => {
-        const translated = await Promise.all(
-          patientData.map(async (p) => {
-            const translatedName = await translateText(p.name, 'kn');
-            const translatedAddress = await translateText(p.address, 'kn');
-            const translatedDate = await translateText(p.createdAt.split("T")[0], 'kn');
-            return {
-              ...p,
-              translatedName,
-              translatedAddress,
-              translatedDate
-            };
-          })
-        );
-        setTranslatedPatients(translated);
-      };
-      translateData();
-    } else {
-      setTranslatedPatients(null);
-    }
-  }, [language, patientData]);
-
-  const handleSearchChange = (e) => {
-    setSearchQuery(e.target.value);
-  };
-
-  const handleClearBtn = () => {
-    setSearchQuery("");
-  };
-
   const filteredPatients = patientData.filter((data) => {
-    if (!data || !data.name) return false;
-    const name = data.name.toLowerCase();
+    if (!data?.name) return false;
     const query = searchQuery.toLowerCase();
-    return name.includes(query);
+    const matchesSearch = (
+      data.name.toLowerCase().includes(query) ||
+      formatPatientId(data.patientId).toLowerCase().includes(query) ||
+      String(data.patientId).includes(query)
+    );
+    const matchesStatus =
+      statusFilter === "all" ||
+      (statusFilter === "admitted" && !data.discharge_date) ||
+      (statusFilter === "discharged" && !!data.discharge_date);
+    return matchesSearch && matchesStatus;
   });
 
-  // Get initials for avatar
   const getInitials = (name) => {
     if (!name) return "?";
     const parts = name.trim().split(" ");
-    if (parts.length >= 2) return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
-    return parts[0][0].toUpperCase();
+    return parts.length >= 2
+      ? `${parts[0][0]}${parts[1][0]}`.toUpperCase()
+      : parts[0][0].toUpperCase();
   };
 
   return (
-    <div className="patientData">
-      {/* Top Header */}
-      <div className="header">
-        <div className="brand-title">
-          <img src={klelogo} alt="KLE Logo" style={{ height: "30px", width: "auto" }} />
-          KLE Centenary <span>Rehabilitation &amp; De-addiction Unit</span>
-        </div>
-        <i
-          className="bi bi-box-arrow-right"
-          title="Logout"
-          onClick={() => {
-            localStorage.clear();
-            navigate("/");
-          }}
-        ></i>
+    <div className="dashboard has-navbar">
+      <Navbar isDashboard={true} menuOpen={menuOpen} />
+
+      {/* Sidebar */}
+      <div className={menuOpen ? "sidebar" : "sidebar close"}>
+        <ul className="nav-links">
+          <li>
+            <i className="bx bx-menu" onClick={() => setMenuOpen(!menuOpen)}></i>
+          </li>
+
+          {/* Dashboard */}
+          <li>
+            {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+            <a href="#" onClick={(e) => { e.preventDefault(); setSelected("dashboard"); }}>
+              <i className="bx bx-grid-alt"></i>
+              <span className="link_name">Dashboard</span>
+            </a>
+            <ul className="sub-menu blank">
+              <li><a className="link_name" href="#">Dashboard</a></li>
+            </ul>
+          </li>
+
+          {/* Patients */}
+          <li>
+            {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+            <a href="#" onClick={(e) => { e.preventDefault(); setSelected("patients"); }}>
+              <i className="bx bx-user"></i>
+              <span className="link_name">{t('patients', language)}</span>
+            </a>
+            <ul className="sub-menu blank">
+              <li><a className="link_name" href="#">{t('patients', language)}</a></li>
+            </ul>
+          </li>
+
+          {/* Profile / Logout */}
+          <li>
+            <div className="profile-details">
+              <div className="profile-content">
+                <i className="bi bi-person-fill"></i>
+              </div>
+              <div className="name-job">
+                <div className="profile_name">Counsellor</div>
+                <div className="job">Staff</div>
+              </div>
+              <i
+                className="bx bx-log-out"
+                onClick={() => { localStorage.clear(); navigate("/"); }}
+              ></i>
+            </div>
+          </li>
+        </ul>
       </div>
 
-      {/* Patient List Section */}
-      <div className="patient-list">
-        <div className="header">
-          <h6>{t('patientsList', language)}</h6>
-          <div className="buttons1">
-            <button onClick={() => navigate(`/patientAdd/${locationId}`)}>
-              <i className="bi bi-person-plus-fill"></i>
-              {t('addPatient', language)}
-            </button>
+      {/* Main section */}
+      <section className="home-section">
 
-            <div className="input-wrap1">
-              <i className="fas fa-search"></i>
-              <input
-                onChange={handleSearchChange}
-                value={searchQuery}
-                type="text"
-                name="patient-search"
-                id="product-search"
-                placeholder={t('searchPatients', language)}
-              />
-              {searchQuery && <i onClick={handleClearBtn} className="fas fa-times"></i>}
+        {/* ── Dashboard Stats ── */}
+        {selected === "dashboard" && (
+          <div className="admin-home">
+            <div className="header">
+              <h6>
+                Welcome, Counsellor!
+                <span>Rehabilitation &amp; De-addiction Unit, KLE Centenary Charitable Hospital</span>
+              </h6>
+              <div className="header-badge">Active Session</div>
+            </div>
+
+            <div className="data-box">
+              <div className="stat-card">
+                <div className="stat-icon"><i className="fas fa-user-injured"></i></div>
+                <div className="stat-content">
+                  <h6>{patientData.length}</h6>
+                  <p>Total Patients</p>
+                </div>
+              </div>
+              <div className="stat-card">
+                <div className="stat-icon"><i className="fas fa-user-check"></i></div>
+                <div className="stat-content">
+                  <h6>{patientData.filter(p => p.discharge_date).length}</h6>
+                  <p>Discharged</p>
+                </div>
+              </div>
+              <div className="stat-card">
+                <div className="stat-icon"><i className="fas fa-procedures"></i></div>
+                <div className="stat-content">
+                  <h6>{patientData.filter(p => !p.discharge_date).length}</h6>
+                  <p>Admitted</p>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-
-        {filteredPatients.length !== 0 ? (
-          <div>
-            {filteredPatients.map((data, key) => {
-              const translatedData = translatedPatients?.find(tp => tp._id === data._id) || data;
-              const displayName = translatedData.translatedName || data.name;
-              const displayAddress = translatedData.translatedAddress || data.address;
-              const displayDate = translatedData.translatedDate || (data.createdAt ? data.createdAt.split("T")[0] : "");
-              return (
-                <div className="patient" key={key} style={{ animationDelay: `${key * 0.05}s` }}>
-                  <div className="patient-avatar">
-                    {getInitials(data.name)}
-                  </div>
-                  <p>
-                    <strong>{displayName}</strong>
-                    <span className="meta">
-                      {displayAddress} · {displayDate}
-                      {data.joining_date && (
-                        <span> · <i className="bi bi-calendar-check" style={{color:"#003b7a", marginRight:"3px"}}></i>
-                        Joined: {new Date(data.joining_date).toLocaleDateString()}</span>
-                      )}
-                      {data.discharge_date && (
-                        <span> · <i className="bi bi-calendar-x" style={{color:"#16a34a", marginRight:"3px"}}></i>
-                        Discharged: {new Date(data.discharge_date).toLocaleDateString()}</span>
-                      )}
-                    </span>
-                  </p>
-                  <div className="controls">
-                    <button
-                      title="View Patient"
-                      onClick={() => navigate(`/patient/${data._id}`)}
-                    >
-                      <i className="bi bi-eye"></i>
-                    </button>
-                    <button
-                      title="Edit Patient"
-                      onClick={() => navigate(`/patient/${data._id}`)}
-                    >
-                      <i className="bi bi-pencil-square"></i>
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        ) : (
-          <p className="no-patient">
-            {searchQuery ? "No patients match your search" : "No Patients To Display"}
-          </p>
         )}
-      </div>
+
+        {/* ── Patients List ── */}
+        {selected === "patients" && (
+          <div className="content">
+            <div className="header">
+              <h4>{t('patientsList', language)}</h4>
+              <div className="buttons">
+                {/* Status Filter */}
+                <div style={{ display: "flex", gap: "6px" }}>
+                  {["all", "admitted", "discharged"].map(f => (
+                    <button
+                      key={f}
+                      onClick={() => setStatusFilter(f)}
+                      style={{
+                        padding: "6px 14px",
+                        borderRadius: "8px",
+                        border: "1px solid",
+                        cursor: "pointer",
+                        fontWeight: 600,
+                        fontSize: "0.8rem",
+                        transition: "all 0.2s",
+                        background: statusFilter === f
+                          ? f === "admitted" ? "#f59e0b"
+                          : f === "discharged" ? "#16a34a"
+                          : "#003b7a"
+                          : "#fff",
+                        color: statusFilter === f ? "#fff" : "#64748b",
+                        borderColor: statusFilter === f
+                          ? f === "admitted" ? "#f59e0b"
+                          : f === "discharged" ? "#16a34a"
+                          : "#003b7a"
+                          : "#e2e8f0",
+                      }}
+                    >
+                      {f === "all" ? "All" : f === "admitted" ? "Admitted" : "Discharged"}
+                    </button>
+                  ))}
+                </div>
+                <button className="add-btn" onClick={() => navigate(`/patientAdd/${locationId}`)}>
+                  <i className="bi bi-person-plus-fill"></i> {t('addPatient', language)}
+                </button>
+                <div className="input-wrap">
+                  <i className="fas fa-search"></i>
+                  <input
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    type="text"
+                    name="patient-search"
+                    id="product-search"
+                    placeholder={t('searchPatients', language)}
+                  />
+                  {searchQuery && <i onClick={() => setSearchQuery("")} className="fas fa-times"></i>}
+                </div>
+              </div>
+            </div>
+
+            <div className="table-div">
+              <table className="table">
+                <thead className="table-header">
+                  <tr>
+                    <th scope="col">Patient ID</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Address</th>
+                    <th scope="col">Joining Date</th>
+                    <th scope="col">Discharge Date</th>
+                    <th scope="col"></th>
+                  </tr>
+                </thead>
+                <tbody className="table-body">
+                  {filteredPatients.length > 0 ? filteredPatients.map((data, key) => (
+                    <tr key={key}>
+                      <th scope="row">{formatPatientId(data.patientId)}</th>
+                      <td>{data.name}</td>
+                      <td>{data.address}</td>
+                      <td>
+                        {data.joining_date
+                          ? new Date(data.joining_date).toLocaleDateString("en-IN")
+                          : <span style={{ color: "#94a3b8" }}>—</span>}
+                      </td>
+                      <td>
+                        {data.discharge_date
+                          ? <span style={{ color: "#16a34a", fontWeight: 600 }}>{new Date(data.discharge_date).toLocaleDateString("en-IN")}</span>
+                          : <span style={{ color: "#f59e0b", fontWeight: 600, fontSize: "0.75rem" }}>Admitted</span>}
+                      </td>
+                      <td>
+                        <div style={{ display: "flex", gap: "6px", justifyContent: "flex-end" }}>
+                          <button className="edit-btn" title="View Patient" onClick={() => navigate(`/patient/${data._id}`)}>
+                            <i className="bi bi-eye"></i>
+                          </button>
+                          <button className="edit-btn" title="Edit Patient" onClick={() => navigate(`/patient/${data._id}`)}>
+                            <i className="bi bi-pencil-square"></i>
+                          </button>
+                          <button className="edit-btn" title="Download PDF" onClick={() => printPatientPDF(data)} style={{ color: "#dc2626" }}>
+                            <i className="bi bi-file-earmark-pdf"></i>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  )) : (
+                    <tr><td colSpan="6" className="text-center py-4">
+                      {searchQuery ? "No patients match your search" : "No Patients To Display"}
+                    </td></tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+      </section>
     </div>
   );
 }

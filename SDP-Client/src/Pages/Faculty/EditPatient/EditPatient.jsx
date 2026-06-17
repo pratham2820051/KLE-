@@ -9,6 +9,7 @@ import TabChange from "../../../component/TabChange/TabChange";
 import Loader from "../../../component/Loader/Loader";
 import axios from "axios";
 import { ADD_PATIENT, GET_PATIENT_USER } from "../../../utils/apiConstant";
+import { printPatientPDF } from "../../../utils/printPatient";
 
 const tabList = [{
   name: "basicInfo",
@@ -56,7 +57,7 @@ function EditPatient() {
 
       if (!auth) {
         setLoading(false);
-        navigate("/login");
+        navigate("/");
         return;
       }
 
@@ -65,7 +66,7 @@ function EditPatient() {
         Authorization: `Bearer ${cleanToken}`,
       };
 
-      const url = isAdmin ? ADD_PATIENT : GET_PATIENT_USER;
+      const url = ADD_PATIENT;
 
       const response = await axios.get(url, { headers });
       if (response.data && response.data.data) {
@@ -99,15 +100,29 @@ function EditPatient() {
   return (
     <div className="edit-patient">
       {loading && <Loader />}
-      <div className="header" style={{ width: "60%", margin: "auto", paddingTop: "20px", display: "flex", justifyContent: "flex-start" }}>
+      <div className="header" style={{ width: "60%", margin: "auto", paddingTop: "20px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <i
           className="bi bi-arrow-left-square-fill"
-          style={{ fontSize: "25px", cursor: "pointer" }}
+          style={{ fontSize: "25px", cursor: "pointer", color: "#003b7a" }}
           onClick={() => {
             const isAdmin = !!localStorage.getItem("auth");
             navigate(isAdmin ? "/admin/home" : "/faculty");
           }}
         ></i>
+        {data && data.name && (
+          <button
+            onClick={() => printPatientPDF(data)}
+            style={{
+              display: "flex", alignItems: "center", gap: "6px",
+              background: "#dc2626", color: "#fff", border: "none",
+              borderRadius: "8px", padding: "8px 16px", cursor: "pointer",
+              fontWeight: 600, fontSize: "0.9rem"
+            }}
+          >
+            <i className="bi bi-file-earmark-pdf-fill"></i>
+            Print PDF
+          </button>
+        )}
       </div>
       {<TabChange tabList={tabList} setStep={setStep} step={step} />}
 

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import './Navbar.scss'
 import { useNavigate } from "react-router-dom";
 import klelogo from "../../assets/logo.png";
@@ -47,6 +47,16 @@ function Navbar(props) {
   const hasSession = !!localStorage.getItem("auth") || !!localStorage.getItem("facultyAuth");
   const isAdmin = !!localStorage.getItem("auth");
 
+  // Live clock
+  const [now, setNow] = useState(new Date());
+  useEffect(() => {
+    const timer = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const dateStr = now.toLocaleDateString("en-IN", { weekday: "short", day: "2-digit", month: "short", year: "numeric" });
+  const timeStr = now.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+
   return (
     <div className={`navbar-div ${props.isDashboard ? 'dashboard-navbar' : ''} ${props.isDashboard && !props.menuOpen ? 'sidebar-closed' : ''}`}>
       <nav className="navbar navbar-expand-lg navbar-light ">
@@ -61,6 +71,11 @@ function Navbar(props) {
           <div className="collapse navbar-collapse" id="navbarSupportedContent">
             {props.isDashboard ? (
               <div className="d-flex align-items-center ms-auto gap-3">
+                {/* Live Date & Time */}
+                <div style={{ textAlign: "right", lineHeight: 1.3 }}>
+                  <div style={{ fontSize: "0.8rem", fontWeight: 600, color: "#003b7a" }}>{dateStr}</div>
+                  <div style={{ fontSize: "0.85rem", fontWeight: 700, color: "#003b7a", fontVariantNumeric: "tabular-nums" }}>{timeStr}</div>
+                </div>
                 <button
                   className="btn btn-login-home"
                   type="button"

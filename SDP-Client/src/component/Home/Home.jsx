@@ -7,7 +7,7 @@ import axios from "axios";
 import { useLanguage } from "../../context/LanguageContext";
 import { t } from "../../translations";
 
-function Home({ locCount, facCount, campCount, patientCount, adminCount = 1 }) {
+function Home({ locCount, facCount, campCount, patientCount, adminCount = 1, patients = [] }) {
   const { language } = useLanguage();
   const ageBinList = [
     "18-25",

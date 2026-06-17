@@ -10,8 +10,8 @@ const Topbar = () => {
     const { language, changeLanguage } = useLanguage()
     const location = useLocation()
 
-    // Hide Topbar on login page, public landing page, and admin pages
-    if (location.pathname === '/login' || location.pathname === '/' || location.pathname.startsWith('/admin') || location.pathname.endsWith('/login')) {
+    // Hide Topbar on login page, public landing page, admin pages, and faculty/counsellor dashboard
+    if (location.pathname === '/login' || location.pathname === '/' || location.pathname.startsWith('/admin') || location.pathname.endsWith('/login') || location.pathname === '/faculty') {
         return null
     }
 

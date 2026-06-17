@@ -27,6 +27,12 @@ function CounsellorRoute({ children }) {
   if (!token || role === "admin") return <Navigate to="/" replace />;
   return children;
 }
+
+function AuthRoute({ children }) {
+  const token = localStorage.getItem("auth") || localStorage.getItem("facultyAuth");
+  if (!token) return <Navigate to="/" replace />;
+  return children;
+}
 // ─────────────────────────────────────────────────────────────────────────────
 
 function App() {
@@ -45,15 +51,12 @@ function App() {
 
           {/* Counsellor / Nurse only */}
           <Route path="/faculty" element={<CounsellorRoute><DashboardFaculty /></CounsellorRoute>} />
+          <Route path="/patientAdd/:id" element={<CounsellorRoute><AddPatientPage /></CounsellorRoute>} />
           <Route path="/patientadd/:id" element={<CounsellorRoute><AddPatientPage /></CounsellorRoute>} />
           <Route path="/patientview/:id" element={<CounsellorRoute><ViewPatient /></CounsellorRoute>} />
 
           {/* Shared (both roles) */}
-          <Route path="/patient/:id" element={
-            (localStorage.getItem("auth") || localStorage.getItem("facultyAuth"))
-              ? <EditPatient />
-              : <Navigate to="/" replace />
-          } />
+          <Route path="/patient/:id" element={<AuthRoute><EditPatient /></AuthRoute>} />
           <Route path="/predictSoberPeriod" element={<SoberPeriodPrediction />} />
           <Route path="/predictRiskLevel" element={<RiskLevelPrediction />} />
           <Route path="/predictAAO" element={<AAOPrediction />} />
