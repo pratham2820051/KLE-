@@ -96,38 +96,46 @@ function Home() {
             {/* Logged-in card OR Login form */}
             {isLoggedIn ? (
               <div className="kle-login-card">
-                <h2>Welcome Back</h2>
-                <p className="kle-session-msg">
-                  You are already signed in.
-                </p>
-                <button
-                  className="kle-signin-btn"
-                  onClick={() => navigate(isAdmin ? "/admin/home" : "/faculty")}
-                >
+                <div className="kle-login-card__header">
+                  <i className="bx bx-lock-alt kle-login-card__icon"></i>
+                  <div>
+                    <h2>Welcome back</h2>
+                    <p className="kle-login-card__sub">You are already signed in.</p>
+                  </div>
+                </div>
+                <button className="kle-signin-btn" onClick={() => navigate(isAdmin ? "/admin/home" : "/faculty")}>
                   <i className="bx bx-grid-alt" style={{ marginRight: "8px" }} />
                   Return to Dashboard
                 </button>
-                <button className="kle-logout-link" onClick={handleLogout}>
-                  Sign out
-                </button>
+                <button className="kle-logout-link" onClick={handleLogout}>Sign out</button>
               </div>
             ) : (
               <div className="kle-login-card">
-                <h2>Login</h2>
+                <div className="kle-login-card__header">
+                  <i className="bx bx-lock-alt kle-login-card__icon"></i>
+                  <div>
+                    <h2>Welcome back</h2>
+                    <p className="kle-login-card__sub">Sign in to Parivarthana portal</p>
+                  </div>
+                </div>
                 <form onSubmit={handleLogin}>
                   <div className="kle-field">
-                    <label>Email / User ID</label>
-                    <input
-                      type="email"
-                      placeholder="Enter your email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
-                    />
+                    <label>Email or user ID</label>
+                    <div className="kle-field__input-wrap">
+                      <i className="bx bx-envelope kle-field__icon"></i>
+                      <input
+                        type="email"
+                        placeholder="you@example.com"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                      />
+                    </div>
                   </div>
                   <div className="kle-field">
                     <label>Password</label>
                     <div className="kle-field__input-wrap">
+                      <i className="bx bx-lock kle-field__icon"></i>
                       <input
                         type={showPassword ? "text" : "password"}
                         placeholder="••••••••"
@@ -143,15 +151,18 @@ function Home() {
                   <div className="kle-field-row">
                     <label className="kle-remember">
                       <input type="checkbox" />
-                      <span>Remember Me</span>
+                      <span>Remember me</span>
                     </label>
                     <button type="button" className="kle-forgot-btn" onClick={() => setShowForgot(true)}>
-                      Forgot Password?
+                      Forgot password?
                     </button>
                   </div>
                   <button type="submit" className="kle-signin-btn" disabled={loading}>
-                    {loading ? "Signing in..." : "Sign In"}
+                    {loading ? "Signing in..." : "Sign in"}
                   </button>
+                  <p className="kle-secure-note">
+                    <i className="bx bx-shield-quarter"></i> Your data is encrypted and secure
+                  </p>
                 </form>
               </div>
             )}

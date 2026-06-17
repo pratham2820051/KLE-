@@ -110,68 +110,92 @@
 
 /* ── Login Card ── */
 .kle-login-card {
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: #ffffff;
   border-radius: 16px;
   padding: 32px;
-  width: 380px;
+  width: 420px;
   flex-shrink: 0;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.18);
   box-sizing: border-box;
 
-  @media (max-width: 900px) {
-    width: 340px;
+  @media (max-width: 900px) { width: 360px; }
+  @media (max-width: 768px) { width: 100%; }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 28px;
   }
 
-  @media (max-width: 768px) {
-    width: 100%;
+  &__icon {
+    font-size: 2rem;
+    color: #003b7a;
   }
 
   h2 {
-    color: #003b7a;
+    color: #0f172a;
     font-size: 1.5rem;
-    font-weight: 700;
-    margin: 0 0 20px 0;
-    background: rgba(255,255,255,0.9);
-    display: inline-block;
-    padding: 4px 12px;
-    border-radius: 6px;
+    font-weight: 800;
+    margin: 0 0 2px 0;
+  }
+
+  &__sub {
+    color: #64748b;
+    font-size: 0.9rem;
+    margin: 0;
   }
 }
 
 .kle-field {
-  margin-bottom: 14px;
+  margin-bottom: 16px;
 
   label {
     display: block;
-    font-size: 0.85rem;
+    font-size: 0.88rem;
     font-weight: 600;
-    color: #fff;
-    margin-bottom: 5px;
+    color: #334155;
+    margin-bottom: 6px;
   }
 
   input {
     width: 100%;
     padding: 12px 14px;
-    border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    background: rgba(255, 255, 255, 0.92);
+    border-radius: 10px;
+    border: 1.5px solid #e2e8f0;
+    background: #f8fafc;
     font-size: 0.95rem;
     outline: none;
     box-sizing: border-box;
-    transition: border-color 0.2s;
+    color: #0f172a;
+    transition: border-color 0.2s, box-shadow 0.2s;
 
     &:focus {
       border-color: #003b7a;
-      box-shadow: 0 0 0 2px rgba(0, 59, 122, 0.2);
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(0, 59, 122, 0.1);
     }
+
+    &::placeholder { color: #94a3b8; }
   }
 
   &__input-wrap {
     position: relative;
+    display: flex;
+    align-items: center;
 
-    input { padding-right: 42px; }
+    .kle-field__icon {
+      position: absolute;
+      left: 12px;
+      color: #64748b;
+      font-size: 1.1rem;
+      pointer-events: none;
+    }
+
+    input {
+      padding-left: 38px;
+      padding-right: 42px;
+    }
   }
 }
 
@@ -183,35 +207,40 @@
   background: none;
   border: none;
   cursor: pointer;
-  color: #555;
+  color: #64748b;
   font-size: 1.1rem;
   padding: 0;
   line-height: 1;
+
+  &:hover { color: #003b7a; }
 }
 
 .kle-field-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 18px;
+  margin-bottom: 20px;
 }
 
 .kle-remember {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   cursor: pointer;
-  color: #fff;
-  font-size: 0.85rem;
+  color: #334155;
+  font-size: 0.88rem;
 
-  input { width: auto; margin: 0; }
+  input { width: auto; margin: 0; accent-color: #003b7a; }
 }
 
-.kle-forgot {
-  font-size: 0.85rem;
+.kle-forgot-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.88rem;
   font-weight: 600;
-  color: #ffe082;
-  text-decoration: none;
+  color: #f59e0b;
+  padding: 0;
 
   &:hover { text-decoration: underline; }
 }
@@ -222,14 +251,29 @@
   background: #003b7a;
   color: #fff;
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   font-size: 1rem;
   font-weight: 700;
   cursor: pointer;
   transition: background 0.2s, transform 0.1s;
+  margin-bottom: 14px;
 
-  &:hover { background: #00509e; }
+  &:hover { background: #002a5c; }
   &:active { transform: scale(0.98); }
+  &:disabled { opacity: 0.7; cursor: not-allowed; }
+}
+
+.kle-secure-note {
+  text-align: center;
+  color: #64748b;
+  font-size: 0.82rem;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+
+  i { font-size: 1rem; color: #003b7a; }
 }
 
 /* ── Leadership ── */
