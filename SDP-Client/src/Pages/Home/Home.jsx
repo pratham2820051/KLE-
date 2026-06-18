@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./Home.scss";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -66,6 +66,34 @@ function Home() {
     setForgotLoading(false);
   };
 
+  
+
+  // Typewriter effect
+  const line1 = "Parivarthana Rehabilitation &";
+  const line2 = "De-addiction Unit";
+  const [typedLine1, setTypedLine1] = useState("");
+  const [typedLine2, setTypedLine2] = useState("");
+
+  useEffect(() => {
+    let i = 0;
+    setTypedLine1(""); setTypedLine2("");
+    const t1 = setInterval(() => {
+      i++;
+      setTypedLine1(line1.slice(0, i));
+      if (i >= line1.length) {
+        clearInterval(t1);
+        let j = 0;
+        const t2 = setInterval(() => {
+          j++;
+          setTypedLine2(line2.slice(0, j));
+          if (j >= line2.length) clearInterval(t2);
+        }, 50);
+      }
+    }, 45);
+    return () => clearInterval(t1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const handleLogout = () => {
     localStorage.removeItem("auth");
     localStorage.removeItem("facultyAuth");
@@ -90,7 +118,11 @@ function Home() {
           <div className="kle-hero__overlay" />
           <div className="kle-hero__content">
             <div className="kle-hero__text">
-              <h1>Parivarthana Rehabilitation &amp; De-addiction Unit</h1>
+              <h1>
+                {typedLine1}<br />{typedLine2}
+                {(!typedLine2 || typedLine2.length < line2.length) && <span className="kle-cursor">|</span>}
+              </h1>
+              <p>KLE Centenary Charitable Hospital, Yellur Road, Belgaum</p>
             </div>
 
             {/* Logged-in card OR Login form */}

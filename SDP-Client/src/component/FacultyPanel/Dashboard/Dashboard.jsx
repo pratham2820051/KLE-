@@ -17,7 +17,7 @@ function Dashboard() {
 
   const auth = localStorage.getItem("facultyAuth") || localStorage.getItem("auth");
   const headers = { Authorization: `Bearer ${auth}` };
-
+  
   const [menuOpen, setMenuOpen] = useState(true);
   const [selected, setSelected] = useState("dashboard");
   const [locationId, setLocationId] = useState();
