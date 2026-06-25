@@ -38,6 +38,8 @@ const ALLOWED_ORIGINS = [
   "https://sdp-client-tau.vercel.app",
   "https://sdp-doddabhathi.vercel.app",
   "https://sdp-goa.vercel.app",
+  // Add your new frontend Vercel URL below after deploying
+  // "https://kle-frontend.vercel.app",
 ];
 
 app.use(

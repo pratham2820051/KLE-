@@ -1,4 +1,4 @@
-export const BASE_URL = "http://localhost:5001";
+export const BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5001";
 export const ML_URL = "http://localhost:9000";
 
 export const LOGIN_URL = `${BASE_URL}/api/user/login`;
