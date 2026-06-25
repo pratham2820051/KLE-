@@ -13,7 +13,12 @@
     "start": "node index.js",
     "build": "echo 'Build completed'"
   },
-  "keywords": ["nodejs", "express", "mongodb", "api"],
+  "keywords": [
+    "nodejs",
+    "express",
+    "mongodb",
+    "api"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
@@ -23,6 +28,7 @@
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "express-async-handler": "^1.2.0",
+    "express-rate-limit": "8.5.2",
     "helmet": "^7.1.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.0.3",

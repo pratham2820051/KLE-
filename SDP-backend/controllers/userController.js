@@ -8,6 +8,7 @@ import {
 } from "../utils/generateToken.js";
 import jwt from "jsonwebtoken";
 import axios from "axios";
+import connectDB from "../config/db.js";
 
 import { sendMail } from "../utils/sendEmail.js";
 import { emailVerificationTemplate } from "../templates/welcomeTemplate.js";
@@ -30,6 +31,7 @@ const authUser = asyncHandler(async (req, res) => {
   }
 
   try {
+    await connectDB();
     const user = await User.findOne({ email });
 
     if (!user) {

@@ -31,19 +31,20 @@ const userSchema = mongoose.Schema(
   }
 );
 
-// Password methods commented out for plain text comparison (matches working local version)
+// Compare entered password against bcrypt hash
 userSchema.methods.matchPassword = async function (enteredPassword) {
-  return this.password === enteredPassword;
+  return await bcrypt.compare(enteredPassword, this.password);
 };
 
-// userSchema.pre("save", async function (next) {
-//   if (!this.isModified("password")) {
-//     next();
-//   }
-
-//   const salt = await bcrypt.genSalt(10);
-//   this.password = await bcrypt.hash(this.password, salt);
-// });
+// Hash password before saving if it has been modified
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) {
+    return next();
+  }
+  const salt = await bcrypt.genSalt(12);
+  this.password = await bcrypt.hash(this.password, salt);
+  next();
+});
 
 const User = mongoose.model("User", userSchema);
 

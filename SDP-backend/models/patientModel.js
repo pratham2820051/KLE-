@@ -1,4 +1,16 @@
 import mongoose from "mongoose";
+import { encrypt, decrypt } from "../utils/encryption.js";
+
+// Fields that contain PII and must be encrypted at rest
+const ENCRYPTED_FIELDS = [
+  "aadharNumber",
+  "name",
+  "phone",
+  "address",
+  "spouse_name",
+  "annual_income",
+  "financial_debt_amount",
+];
 
 const patientSchema = mongoose.Schema(
   {
@@ -494,6 +506,66 @@ const patientSchema = mongoose.Schema(
   }
 );
 
+// ── Encryption hooks ────────────────────────────────────────────────────────
+// IMPORTANT: hooks must be registered on the schema BEFORE compiling the model.
+
+// Encrypt PII fields on every save (insert + update via save())
+patientSchema.pre("save", function (next) {
+  for (const field of ENCRYPTED_FIELDS) {
+    if (this.isModified(field) && this[field] != null && this[field] !== "") {
+      this[field] = encrypt(this[field]);
+    }
+  }
+  next();
+});
+
+// Encrypt PII fields when using findOneAndUpdate / updateOne / updateMany
+function encryptUpdateFields(next) {
+  const update = this.getUpdate();
+  if (!update) return next();
+
+  // Handle both { field: value } and { $set: { field: value } }
+  const targets = [update, update.$set].filter(Boolean);
+  for (const obj of targets) {
+    for (const field of ENCRYPTED_FIELDS) {
+      if (obj[field] != null && obj[field] !== "") {
+        obj[field] = encrypt(obj[field]);
+      }
+    }
+  }
+  next();
+}
+patientSchema.pre("findOneAndUpdate", encryptUpdateFields);
+patientSchema.pre("updateOne", encryptUpdateFields);
+patientSchema.pre("updateMany", encryptUpdateFields);
+
+// Decrypt PII fields after any read operation
+function decryptDoc(doc) {
+  if (!doc) return;
+  for (const field of ENCRYPTED_FIELDS) {
+    if (doc[field]) {
+      doc[field] = decrypt(doc[field]);
+    }
+  }
+}
+
+patientSchema.post("save", function (doc) {
+  decryptDoc(doc); // return decrypted value to the caller after save
+});
+
+patientSchema.post("find", function (docs) {
+  if (Array.isArray(docs)) docs.forEach(decryptDoc);
+});
+
+patientSchema.post("findOne", function (doc) {
+  decryptDoc(doc);
+});
+
+patientSchema.post("findOneAndUpdate", function (doc) {
+  decryptDoc(doc);
+});
+
+// ── Compile model (always AFTER hooks are registered) ───────────────────────
 const Patient = mongoose.model("Patient", patientSchema);
 
 export default Patient;

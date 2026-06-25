@@ -18,35 +18,28 @@ const protect = asyncHandler(async (req, res, next) => {
         throw new Error("Server configuration error");
       }
 
-      // Verify JWT token first (without database)
+      // Verify JWT token
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-      // Check if this is a fallback authentication token (from our login system)
-      if (decoded.id === "admin-user-id" || decoded.id === "test-user-id" || decoded.id === "faculty-user-id" || decoded.id === "nurse-user-id") {
-        // This is a fallback authentication, create user object without database query
-        req.user = {
-          _id: decoded.id,
-          role: "admin",
-          email: "authenticated@example.com",
-          name: "Authenticated User"
-        };
-      } else {
-        // Try to verify user from database, but don't fail if database is unavailable
-        try {
-          await connectDB();
-          // Now query the user from database
-          req.user = await User.findById(decoded.id).select("-password");
+      // Validate that the token contains a real MongoDB ObjectId
+      if (!decoded.id || decoded.id.length !== 24) {
+        res.status(401);
+        throw new Error("Not authorized, invalid token");
+      }
 
-          if (!req.user) {
-            res.status(401);
-            throw new Error("User not found");
-          }
-        } catch (dbError) {
-          console.error("Database connection failed in auth middleware:", dbError.message);
-          // This is a real database user, but database is down
-          res.status(503);
-          throw new Error("Database temporarily unavailable");
+      // Fetch user from database — no fallback, no backdoor
+      try {
+        await connectDB();
+        req.user = await User.findById(decoded.id).select("-password");
+
+        if (!req.user) {
+          res.status(401);
+          throw new Error("User not found");
         }
+      } catch (dbError) {
+        console.error("Database connection failed in auth middleware:", dbError.message);
+        res.status(503);
+        throw new Error("Database temporarily unavailable");
       }
 
       // if (!req.user.emailVerified) {

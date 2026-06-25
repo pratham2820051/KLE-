@@ -29,14 +29,18 @@ const connectDB = async () => {
     connectionAttempts++;
     console.log(`MongoDB connection attempt ${connectionAttempts}/${MAX_CONNECTION_ATTEMPTS}`);
 
-    // Modern MongoDB connection options for serverless
+    // Modern MongoDB connection options
+    // bufferCommands: false only in serverless (Vercel) — on a persistent server
+    // we want buffering enabled so requests that arrive before the connection is
+    // ready are queued rather than immediately rejected.
+    const isServerless = process.env.VERCEL === "1";
     const options = {
-      maxPoolSize: 5, // Maintain up to 5 socket connections
-      serverSelectionTimeoutMS: 10000, // Keep trying to send operations for 10 seconds
-      socketTimeoutMS: 30000, // Close sockets after 30 seconds of inactivity
-      bufferCommands: false, // Disable mongoose buffering
-      maxIdleTimeMS: 15000, // Close connections after 15 seconds of inactivity
-      family: 4, // Use IPv4, skip trying IPv6
+      maxPoolSize: 5,
+      serverSelectionTimeoutMS: 10000,
+      socketTimeoutMS: 30000,
+      bufferCommands: !isServerless,
+      maxIdleTimeMS: 15000,
+      family: 4,
     };
 
     // For Vercel serverless, add connection timeout and retry logic
