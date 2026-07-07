@@ -37,6 +37,10 @@ const protect = asyncHandler(async (req, res, next) => {
           throw new Error("User not found");
         }
       } catch (dbError) {
+        // Only treat it as a DB error if it's not a "user not found" case
+        if (dbError.message === "User not found") {
+          throw dbError;
+        }
         console.error("Database connection failed in auth middleware:", dbError.message);
         res.status(503);
         throw new Error("Database temporarily unavailable");

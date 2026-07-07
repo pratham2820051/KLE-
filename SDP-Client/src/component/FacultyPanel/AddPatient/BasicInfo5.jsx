@@ -151,7 +151,11 @@ function BasicInfo5({ prevData, data, setData, setStep, setLoading }) {
        console.error("Error data:", err.response?.data);
 
        if (err.response?.status === 401) {
-         toast.error(t('authenticationFailed', language));
+         // Clear stale token and force re-login
+         localStorage.removeItem("auth");
+         localStorage.removeItem("facultyAuth");
+         localStorage.removeItem("role");
+         toast.error("Session expired. Please log in again.");
          navigate("/login");
        } else if (err.response?.status === 400) {
          toast.error(`${t('badRequest', language)}: ${err.response?.data?.message || t('invalidData', language)}`);
@@ -229,7 +233,10 @@ function BasicInfo5({ prevData, data, setData, setStep, setLoading }) {
      } catch (err) {
        console.error("Update error:", err);
        if (err.response?.status === 401) {
-         toast.error(t('authenticationFailed', language));
+         localStorage.removeItem("auth");
+         localStorage.removeItem("facultyAuth");
+         localStorage.removeItem("role");
+         toast.error("Session expired. Please log in again.");
          navigate("/login");
        } else if (err.response?.status === 400) {
          toast.error(`${t('badRequest', language)}: ${err.response?.data?.message || t('invalidData', language)}`);
