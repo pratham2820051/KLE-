@@ -11,7 +11,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon index.js",
     "start": "node index.js",
-    "build": "echo 'Build completed'"
+    "build": "echo 'Build completed'",
+    "seed": "node seeder.js",
+    "seed:destroy": "node seeder.js -d"
   },
   "keywords": [
     "nodejs",

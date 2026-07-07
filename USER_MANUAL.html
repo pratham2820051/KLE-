@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alcohol Dependent Patient's Case Automation Tool with Embedded Predictive Models</title>
+  <!-- Google Fonts & Bootstrap Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  
+  <style>
+    :root {
+      --primary: #003b7a;
+      --primary-light: #f0f5ff;
+      --secondary: #1e293b;
+      --accent: #2563eb;
+      --accent-hover: #1d4ed8;
+      --success: #16a34a;
+      --warning: #f59e0b;
+      --danger: #dc2626;
+      --text-main: #334155;
+      --text-muted: #64748b;
+      --border-color: #cbd5e1;
+      --card-bg: #ffffff;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background-color: #f8fafc;
+      color: var(--text-main);
+      line-height: 1.6;
+      padding-bottom: 60px;
+    }
+
+    header {
+      background: linear-gradient(135deg, var(--primary) 0%, #00224d 100%);
+      color: white;
+      padding: 40px 20px;
+      text-align: center;
+      position: relative;
+      border-bottom: 5px solid var(--accent);
+    }
+
+    header h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      letter-spacing: -0.5px;
+    }
+
+    header p {
+      font-size: 1.1rem;
+      opacity: 0.9;
+      font-weight: 300;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 40px auto 0;
+      padding: 0 20px;
+    }
+
+    /* Print instruction card */
+    .print-banner {
+      background-color: var(--primary-light);
+      border-left: 5px solid var(--accent);
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 30px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .print-banner i {
+      font-size: 2rem;
+      color: var(--accent);
+    }
+
+    .print-banner p {
+      font-weight: 500;
+      color: var(--primary);
+    }
+
+    .print-banner button {
+      background-color: var(--accent);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 600;
+      cursor: pointer;
+      margin-left: auto;
+      transition: background 0.2s;
+    }
+
+    .print-banner button:hover {
+      background-color: var(--accent-hover);
+    }
+
+    /* Card Layouts */
+    .section-card {
+      background-color: var(--card-bg);
+      border-radius: 16px;
+      padding: 30px;
+      margin-bottom: 35px;
+      box-shadow: var(--shadow-md);
+      border: 1px solid #e2e8f0;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .section-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    h2 {
+      color: var(--primary);
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--primary-light);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    p {
+      margin-bottom: 15px;
+    }
+
+    /* Steps navigation */
+    .step-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      margin-top: 25px;
+    }
+
+    .step-box {
+      background-color: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 20px;
+      position: relative;
+    }
+
+    .step-badge {
+      background-color: var(--primary);
+      color: white;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.9rem;
+      margin-bottom: 12px;
+    }
+
+    .step-box h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--secondary);
+      margin-bottom: 10px;
+    }
+
+    .step-box p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 0;
+    }
+
+    /* Lists */
+    ul, ol {
+      margin-left: 20px;
+      margin-bottom: 20px;
+    }
+
+    li {
+      margin-bottom: 8px;
+    }
+
+    /* Warning & Tip Alerts */
+    .alert {
+      padding: 15px 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      display: flex;
+      gap: 12px;
+      border: 1px solid transparent;
+    }
+
+    .alert-tip {
+      background-color: #f0fdf4;
+      border-left: 4px solid var(--success);
+      color: #166534;
+      border-color: #d1fae5;
+    }
+
+    .alert-warning {
+      background-color: #fffbeb;
+      border-left: 4px solid var(--warning);
+      color: #92400e;
+      border-color: #fef3c7;
+    }
+
+    .alert-note {
+      background-color: var(--primary-light);
+      border-left: 4px solid var(--accent);
+      color: #1e40af;
+      border-color: #dbeafe;
+    }
+
+    /* Table styles */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      font-size: 0.9rem;
+    }
+
+    th, td {
+      border: 1px solid #e2e8f0;
+      padding: 12px;
+      text-align: left;
+    }
+
+    th {
+      background-color: var(--primary-light);
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f8fafc;
+    }
+
+    /* Printable media queries */
+    @media print {
+      body {
+        background-color: white;
+        color: black;
+        font-size: 10pt;
+        padding-bottom: 0;
+      }
+
+      .container {
+        max-width: 100%;
+        margin: 0;
+        padding: 0;
+      }
+
+      header {
+        background: none !important;
+        color: black !important;
+        border-bottom: 2px solid black;
+        padding: 20px 0;
+      }
+
+      header p {
+        color: black !important;
+      }
+
+      .print-banner {
+        display: none !important;
+      }
+
+      .section-card {
+        box-shadow: none !important;
+        border: none !important;
+        padding: 0 !important;
+        margin-bottom: 30px !important;
+        page-break-inside: avoid;
+      }
+
+      .step-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+
+      .step-box {
+        background-color: white !important;
+        border: 1px solid #ccc !important;
+        page-break-inside: avoid;
+      }
+
+      .alert {
+        background-color: white !important;
+        border: 1px solid #ccc !important;
+        color: black !important;
+        page-break-inside: avoid;
+      }
+
+      h2 {
+        border-bottom: 1px solid black !important;
+        page-break-before: always;
+      }
+      
+      h2:first-of-type {
+        page-break-before: avoid;
+      }
+
+      th {
+        background-color: #eee !important;
+        color: black !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Alcohol Dependent Patient's Case Automation Tool with Embedded Predictive Models</h1>
+    <p>Staff and Administrator User Guide • Simple Step-by-Step Instructions</p>
+  </header>
+
+  <div class="container">
+
+    <!-- Print Banner Helper -->
+    <div class="print-banner">
+      <i class="bi bi-printer-fill"></i>
+      <div>
+        <p>Save this guide as a PDF!</p>
+        <span style="font-size: 0.85rem; color: var(--text-muted);">Open this file in a browser, press <strong>Cmd + P</strong> (Mac) or <strong>Ctrl + P</strong> (Windows) and select "Save as PDF".</span>
+      </div>
+      <button onclick="window.print()">Print to PDF</button>
+    </div>
+
+    <!-- Section 1 -->
+    <div class="section-card">
+      <h2>1. What is this System?</h2>
+      <p>This software is a secure, digital register built for the Rehabilitation and De-addiction Unit at KLE Centenary Charitable Hospital in Belagavi. It is designed to replace old paper logbooks that get damaged, lost, or are difficult to search.</p>
+      <p>The system helps hospital staff, counsellors, and administrators do the following:</p>
+      <ul>
+        <li>Save Patient Files: Store names, contact numbers, and background details securely.</li>
+        <li>Track Progress: Log drug addiction profiles, medical issues, family background, and recovery histories.</li>
+        <li>Write Session Notes: Record counseling summaries and plan follow-up check-ups.</li>
+        <li>Get Reports: Download printable PDF summaries of each patient's files.</li>
+        <li>Calculate Recovery (AI): Use simple question-based forms to predict how long a patient will stay sober and check their risk of returning to addiction.</li>
+      </ul>
+    </div>
+
+    <!-- Section 2 -->
+    <div class="section-card">
+      <h2>2. How to Log In</h2>
+      <p>To start using the system, you must sign in with your email account.</p>
+      <ol>
+        <li>Open the portal link on your computer or tablet.</li>
+        <li>You will see the home screen displaying hospital banners.</li>
+        <li>On the right-side box labeled Welcome Back, type your registered email address and password.</li>
+        <li>Click the blue Sign in button.</li>
+      </ol>
+
+      <div class="alert alert-note">
+        <div>
+          <strong>User Roles and Accounts:</strong>
+          <p style="margin-bottom: 0; font-size: 0.9rem; margin-top: 5px;">
+            • Administrator (Admin): Can create/delete accounts, download global spreadsheets, and view hospital graphs. Default login is admin@admin.com with password 123456.<br>
+            • Counsellors / Nurses (Faculty): Register patients, write notes, and log follow-ups. Accounts are created manually by the Admin.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 3 -->
+    <div class="section-card">
+      <h2>3. Using the Sidebar and Dashboard</h2>
+      <p>Once logged in, the screen shows a sidebar menu on the left and statistics cards on the right.</p>
+      <ul>
+        <li>Toggle Sidebar Menu: Click the three lines icon at the top-left to hide or show the labels in the sidebar.</li>
+        <li>Quick Statistic Cards:
+          <ul>
+            <li>Total Patients: Cumulative patient records saved in the system.</li>
+            <li>Admitted: Patients currently staying in the rehabilitation unit.</li>
+            <li>Discharged: Patients who completed treatment and went home.</li>
+          </ul>
+        </li>
+        <li>Log Out: Click the exit door icon at the bottom of the sidebar to sign out safely.</li>
+      </ul>
+    </div>
+
+    <!-- Section 4 -->
+    <div class="section-card">
+      <h2>4. Searching and Filtering Patients</h2>
+      <p>To view the list of patients, click Patients in the sidebar. You can search, filter, and print files from this screen.</p>
+      
+      <div class="step-grid">
+        <div class="step-box">
+          <div class="step-badge">1</div>
+          <h3>The Search Bar</h3>
+          <p>Type the patient's name, phone number, ID number (for example: KLE-0012), or Aadhar number. The list will update instantly as you type.</p>
+        </div>
+        <div class="step-box">
+          <div class="step-badge">2</div>
+          <h3>Status Buttons</h3>
+          <p>Click All, Admitted, or Discharged to filter patients based on their current clinical stay status.</p>
+        </div>
+        <div class="step-box">
+          <div class="step-badge">3</div>
+          <h3>Clear Search</h3>
+          <p>Click the small X icon inside the search bar to reset the filter and display the full patient directory.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 5 -->
+    <div class="section-card">
+      <h2>5. How to Add a New Patient (6 Steps)</h2>
+      <p>To register a patient, click the blue Add Patient button in the top-right corner of the Patients screen. Fill out each step and click Next to proceed.</p>
+      
+      <div class="step-grid" style="grid-template-columns: 1fr;">
+        <div class="step-box" style="margin-bottom: 10px;">
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
+            <div class="step-badge" style="margin-bottom: 0;">1</div>
+            <strong style="color: var(--primary);">Step 1: Basic Info (Personal Details)</strong>
+          </div>
+          <p>Enter the patient's Name, Age, Gender, Education, Job, Income, Religion, Joining Date, and emergency contact details. 
+          <br><em>*Note on Privacy:* The patient's Aadhar number is automatically encrypted at the database level so no unauthorized person can read it.</em></p>
+        </div>
+
+        <div class="step-box" style="margin-bottom: 10px;">
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
+            <div class="step-badge" style="margin-bottom: 0;">2</div>
+            <strong style="color: var(--primary);">Step 2: Medical and Addiction History</strong>
+          </div>
+          <p>Log details of the substances they use. Click Add Line to specify the drug type (e.g., alcohol, beedi, ganja), age of first use, how many years they used it, and route of intake.
+          Enter height, weight, and blood sugar. Check any withdrawal symptoms experienced (e.g., shaking hands, fits, insomnia) and other medical or psychiatric problems.</p>
+        </div>
+
+        <div class="step-box" style="margin-bottom: 10px;">
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
+            <div class="step-badge" style="margin-bottom: 0;">3</div>
+            <strong style="color: var(--primary);">Step 3: Family, Work and Legal Status</strong>
+          </div>
+          <p>Record family details (spouse info, years married). Select if family members have addiction issues. Record work history (reasons for job loss, unemployment). Write down financial details (how much debt they have and who they borrowed from). Note legal complications (arrests, drunken driving accidents).</p>
+        </div>
+
+        <div class="step-box" style="margin-bottom: 10px;">
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
+            <div class="step-badge" style="margin-bottom: 0;">4</div>
+            <strong style="color: var(--primary);">Step 4: Past Treatment History</strong>
+          </div>
+          <p>Check if the patient was admitted to a rehab center in the past. Save the hospital name, the year, and how long they stayed sober after treatment. Record the reason why they relapsed (started using again).</p>
+        </div>
+
+        <div class="step-box" style="margin-bottom: 10px;">
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
+            <div class="step-badge" style="margin-bottom: 0;">5</div>
+            <strong style="color: var(--primary);">Step 5: Counsellor Section (Notes and Logs)</strong>
+          </div>
+          <p>Describe their childhood history (e.g., poverty, parenting issues before age 15) and school behavior problems (stealing, fighting). Explore why they relapse. Write doctor-specific instructions and log initial follow-up schedules. Click Submit to save the patient.</p>
+        </div>
+
+        <div class="step-box" style="margin-bottom: 10px;">
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
+            <div class="step-badge" style="margin-bottom: 0;">6</div>
+            <strong style="color: var(--primary);">Step 6: Prediction Models</strong>
+          </div>
+          <p>Use the portal's automated calculations to analyze recovery and relapse metrics (see Section 7).</p>
+        </div>
+      </div>
+
+      <div class="alert alert-warning">
+        <div>
+          <strong>Missing Fields Alert:</strong>
+          <p style="margin-bottom: 0; font-size: 0.9rem; margin-top: 5px;">
+            If you skip mandatory fields (such as the patient's name, age, or date of admission in Step 1) and click submit, the system will prevent saving, display a pop-up warning, and jump back to Step 1 highlighting the blank fields.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 6 -->
+    <div class="section-card">
+      <h2>6. Viewing, Editing, and Logging Follow-ups</h2>
+      <p>Patient records can be updated at any time (for example, when they return for check-ups or are discharged).</p>
+      <ul>
+        <li>View Profile: Click the Blue Eye Icon to view the structured patient profile in clean, readable folders.</li>
+        <li>Edit File: Click the Green Pencil Icon next to the patient's row. Modify any details in the forms. Review the changes, go to Step 5, and click the Update button.</li>
+        <li>Logging Follow-up Visits:
+          <ul>
+            <li>Open the patient's record in Edit mode.</li>
+            <li>Go to Step 5 (Counsellor Section).</li>
+            <li>Scroll to the bottom to find the Follow-Up Notes grid.</li>
+            <li>Enter the visit date, choose their recovery status (e.g., Sobriety maintained, Relapsed), write down notes on their physical/mental state, and save the form.</li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Section 7 -->
+    <div class="section-card">
+      <h2>7. How to Use the AI Prediction Tools</h2>
+      <p>The system uses automated calculations (machine learning predictions) to help counsellors plan treatments. Click the prediction buttons on the dashboard or inside Step 6 of the patient form:</p>
+      
+      <table>
+        <thead>
+          <tr>
+            <th>Prediction Model</th>
+            <th>What it calculates</th>
+            <th>Required Information to Type</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Sober Period Prediction</strong></td>
+            <td>Predicts how many months the patient is likely to remain clean/sober after leaving.</td>
+            <td>Marital status, Smoking habit, Willingness for treatment, Blood Sugar, Relapse count, and Sobriety duration.</td>
+          </tr>
+          <tr>
+            <td><strong>Risk Level Prediction</strong></td>
+            <td>Estimates if the patient has a Low, Medium, High, or Very High risk of relapse.</td>
+            <td>Substance type, withdrawal severity, stressors (family issues, debts), and work stability.</td>
+          </tr>
+          <tr>
+            <td><strong>Age of Onset (AAO) Prediction</strong></td>
+            <td>Predicts the age range when the individual likely started substance abuse.</td>
+            <td>Childhood experiences, family history of alcoholism, and education background.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Section 8 -->
+    <div class="section-card">
+      <h2>8. Downloading Reports and Excel Data</h2>
+      <p>Exporting documents for doctors, clinical reviews, or administration meetings is straightforward.</p>
+      
+      <div class="step-grid">
+        <div class="step-box">
+          <div class="step-badge"><i class="bi bi-filetype-pdf"></i></div>
+          <h3>Individual PDF Report</h3>
+          <p>Find the patient in the list. Click the Red PDF Icon in the actions column. A formatted 7-section report containing all intake details, medical issues, and history will download automatically. Print or email it directly to clinical supervisors.</p>
+        </div>
+        <div class="step-box">
+          <div class="step-badge"><i class="bi bi-filetype-xls"></i></div>
+          <h3>Download All Data (Excel/CSV)</h3>
+          <p>(Admin only) Go to the Patients page. If you want a specific range, set the "From" and "To" dates in the calendar filters. Click the blue Download CSV button to get a full Excel-compatible spreadsheet of all patient records.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 9 -->
+    <div class="section-card">
+      <h2>9. Administrator Controls (Manage Staff and Charts)</h2>
+      <p>Administrators have a dashboard featuring extra controls for supervising the unit.</p>
+      <ul>
+        <li>Add Counsellor Accounts:
+          <ol>
+            <li>Select Counsellor (or Faculty) from the sidebar.</li>
+            <li>Click the green Add Counsellor button.</li>
+            <li>Enter their Name, Email address, select their Role (Faculty or Nurse), and assign a secure password. Click Save.</li>
+          </ol>
+        </li>
+        <li>Remove Counsellor Accounts: Click the Red Trash Icon next to the counsellor's name and confirm to remove them.</li>
+        <li>Monitor Age Distribution: The Admin Home screen displays a bar chart representing patient age groups (e.g. 18-25, 26-32, etc.). Move your cursor over any bar on the chart to read the total patient count in that group.</li>
+      </ul>
+    </div>
+
+    <!-- Section 10 -->
+    <div class="section-card">
+      <h2>10. Language Settings</h2>
+      <p>To support regional staff and patients, the application has built-in translation options.</p>
+      <ol>
+        <li>Locate the language dropdown in the top-right corner of the topbar menu.</li>
+        <li>Select either English, Kannada, or Hindi.</li>
+        <li>The system will instantly translate form labels, buttons, navigation menus, and patient tables to the selected language.</li>
+      </ol>
+    </div>
+
+    <!-- Section 11 -->
+    <div class="section-card">
+      <h2>11. Quick Troubleshooting and Help</h2>
+      <ul>
+        <li>The screen is blank or data is not loading: Make sure your device has a working local network or internet connection. If the database cannot be reached, the list will appear empty.</li>
+        <li>I cannot log in: Check for typing mistakes. Login emails and passwords are case-sensitive. If you have forgotten your password, click Forgot Password on the login screen to receive a reset link.</li>
+        <li>The forms will not save: Go back to Step 1 and check if any fields marked with a red star (or highlighted in red) are left blank.</li>
+        <li>PDF is not opening: Ensure your browser pop-up blocker is turned off, or check your browser's Downloads folder.</li>
+      </ul>
+      
+      <div class="alert alert-tip" style="margin-top: 30px;">
+        <div>
+          <strong>Need Technical Help?</strong>
+          <p style="margin-bottom: 0; font-size: 0.9rem; margin-top: 5px;">
+            For server errors, database connection issues, or password resets that you cannot complete yourself, contact the IT Support department at KLE Centenary Charitable Hospital, Belagavi.
+          </p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>

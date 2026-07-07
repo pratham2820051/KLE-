@@ -12,9 +12,9 @@ function Navbar(props) {
   const { language, changeLanguage } = useLanguage();
 
   const languages = [
-    { code: 'en', name: 'English', flag: '🇺🇸', image: english },
-    { code: 'kn', name: 'ಕನ್ನಡ', flag: '🇮🇳', image: kannada },
-    { code: 'hi', name: 'हिन्दी', flag: '🇮🇳', image: hindi }
+    { code: 'en', name: 'English' },
+    { code: 'kn', name: 'ಕನ್ನಡ' },
+    { code: 'hi', name: 'हिन्दी' }
   ];
 
   const currentLang = languages.find(lang => lang.code === language) || languages[0];
@@ -30,20 +30,8 @@ function Navbar(props) {
   const timeStr = now.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
 
   const handleSwitchLanguage = (langCode) => {
-    // 1. Update internal t() state
+    // Update internal t() state and let LanguageContext trigger Google Translate
     changeLanguage(langCode);
-
-    // 2. Trigger Google Translate widget to translate the entire page
-    const tryTranslate = (attempts = 0) => {
-      const select = document.querySelector('.goog-te-combo');
-      if (select) {
-        select.value = langCode;
-        select.dispatchEvent(new Event('change'));
-      } else if (attempts < 15) {
-        setTimeout(() => tryTranslate(attempts + 1), 300);
-      }
-    };
-    tryTranslate();
   };
 
   const handleLogout = () => {
@@ -59,8 +47,7 @@ function Navbar(props) {
 
   return (
     <div className={`navbar-div ${props.isDashboard ? 'dashboard-navbar' : ''} ${props.isDashboard && !props.menuOpen ? 'sidebar-closed' : ''}`}>
-      {/* Hidden Google Translate element — needed for widget to initialize */}
-      <div id="google_translate_element" style={{ display: 'none' }}></div>
+
 
       <nav className="navbar navbar-expand-lg navbar-light">
         <div className="container-fluid">
@@ -91,7 +78,7 @@ function Navbar(props) {
                 <div className="dropdown">
                   <button className="btn btn-register dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false"
                     style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
-                    <i className='bx bx-world'></i> {currentLang.flag} {currentLang.name}
+                    <i className='bx bx-world'></i> {currentLang.name}
                   </button>
                   <ul className="dropdown-menu dropdown-menu-end">
                     {languages.map((lang) => (
@@ -102,7 +89,6 @@ function Navbar(props) {
                           onClick={() => handleSwitchLanguage(lang.code)}
                           style={{ border: "none", background: "transparent", width: "100%", textAlign: "left" }}
                         >
-                          <img src={lang.image} alt="" style={{ width: '20px', marginRight: '8px' }} />
                           <span className="align-middle">{lang.name}</span>
                         </button>
                       </li>

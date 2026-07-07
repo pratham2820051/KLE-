@@ -39,6 +39,8 @@ function App() {
   return (
     <LanguageProvider>
       <div className="App">
+        {/* Hidden Google Translate element — needed for widget to initialize globally */}
+        <div id="google_translate_element" style={{ display: 'none' }}></div>
         <Topbar />
         <Routes>
           {/* Public */}

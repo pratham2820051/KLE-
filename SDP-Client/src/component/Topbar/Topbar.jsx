@@ -16,9 +16,9 @@ const Topbar = () => {
     }
 
     const languages = [
-        { code: 'en', name: 'English', flag: '🇺🇸', image: english },
-        { code: 'kn', name: 'ಕನ್ನಡ', flag: '🇮🇳', image: kannada },
-        { code: 'hi', name: 'हिन्दी', flag: '🇮🇳', image: hindi }
+        { code: 'en', name: 'English' },
+        { code: 'kn', name: 'ಕನ್ನಡ' },
+        { code: 'hi', name: 'हिन्दी' }
     ]
 
     const getCurrentLanguage = () => {
@@ -31,7 +31,7 @@ const Topbar = () => {
         <div className='topbar'>
             <div className="dropdown">
                 <button className="btn btn-register dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i className='bx bx-world'></i> {currentLang.flag} {currentLang.name}
+                    <i className='bx bx-world' style={{ marginRight: '6px' }}></i> {currentLang.name}
                 </button>
                 <ul className="dropdown-menu">
                     {languages.map((lang) => (
@@ -41,7 +41,6 @@ const Topbar = () => {
                                 className={`dropdown-item ${language === lang.code ? 'active' : ''}`}
                                 onClick={() => changeLanguage(lang.code)}
                             >
-                                <img src={lang.image} alt="" style={{ width: '20px', marginRight: '8px' }} />
                                 <span className="align-middle">{lang.name}</span>
                             </button>
                         </li>

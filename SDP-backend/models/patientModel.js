@@ -500,6 +500,23 @@ const patientSchema = mongoose.Schema(
     discharge_date: {
       type: Date,
     },
+    followUps: [
+      {
+        date: {
+          type: Date,
+          default: Date.now,
+        },
+        notes: {
+          type: String,
+        },
+        status: {
+          type: String,
+        },
+        counsellor: {
+          type: String,
+        },
+      },
+    ],
   },
   {
     timestamps: true,

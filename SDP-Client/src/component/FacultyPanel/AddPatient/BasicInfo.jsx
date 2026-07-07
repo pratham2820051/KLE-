@@ -111,6 +111,7 @@ function BasicInfo({ setData, setStep, data }) {
   ];
 
   //formData
+  const [errors, setErrors] = useState({});
   const [name, setName] = useState(null);
   const [age, setAge] = useState(null);
   const [sex, setSex] = useState(null);
@@ -154,6 +155,86 @@ function BasicInfo({ setData, setStep, data }) {
   const [aadhar, setAadhar] = useState();
   const [joiningDate, setJoiningDate] = useState("");
   const [dischargeDate, setDischargeDate] = useState("");
+
+  const handleInputChange = (setter, fieldName, value) => {
+    setter(value);
+    if (errors[fieldName]) {
+      setErrors((prev) => {
+        const next = { ...prev };
+        delete next[fieldName];
+        return next;
+      });
+    }
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!name || !name.trim()) {
+      newErrors.name = t('fieldRequired', language);
+    }
+    
+    if (!age) {
+      newErrors.age = t('fieldRequired', language);
+    } else {
+      const ageNum = Number(age);
+      if (isNaN(ageNum) || ageNum <= 0 || ageNum > 120) {
+        newErrors.age = "Please enter a valid age (1-120)";
+      }
+    }
+
+    if (!sex || sex === t('selectOption', language) || sex === "Select Option") {
+      newErrors.sex = t('fieldRequired', language);
+    }
+
+    if (!district || district === t('selectOption', language) || district === "Select Option") {
+      newErrors.district = t('fieldRequired', language);
+    }
+
+    if (!address || !address.trim()) {
+      newErrors.address = t('fieldRequired', language);
+    }
+
+    if (!aadhar) {
+      newErrors.aadhar = t('fieldRequired', language);
+    } else {
+      const cleanAadhar = String(aadhar).replace(/\s/g, "");
+      if (!/^\d{12}$/.test(cleanAadhar)) {
+        newErrors.aadhar = "Aadhar number must be exactly 12 digits";
+      }
+    }
+
+    if (!joiningDate) {
+      newErrors.joiningDate = t('fieldRequired', language);
+    }
+
+    if (!phone) {
+      newErrors.phone = t('fieldRequired', language);
+    } else {
+      const cleanPhone = String(phone).replace(/\D/g, "");
+      if (cleanPhone.length !== 10) {
+        newErrors.phone = "Phone number must be exactly 10 digits";
+      }
+    }
+
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length > 0) {
+      toast.error("Please fill in all required fields correctly.");
+      
+      setTimeout(() => {
+        const firstInvalidEl = document.querySelector(".is-invalid");
+        if (firstInvalidEl) {
+          firstInvalidEl.scrollIntoView({ behavior: "smooth", block: "center" });
+          firstInvalidEl.focus();
+        }
+      }, 100);
+
+      return false;
+    }
+
+    return true;
+  };
 
   useEffect(() => {
     switch (drugType) {
@@ -212,38 +293,7 @@ function BasicInfo({ setData, setStep, data }) {
   const nextStep = () => {
     try {
       // First validate required fields
-      if (!name) {
-        toast.error(t('fieldRequired', language));
-        return;
-      }
-
-      if (!age) {
-        toast.error(t('fieldRequired', language));
-        return;
-      }
-
-      if (!sex) {
-        toast.error(t('fieldRequired', language));
-        return;
-      }
-
-      if (!address) {
-        toast.error(t('fieldRequired', language));
-        return;
-      }
-
-      if (!district) {
-        toast.error(t('fieldRequired', language));
-        return;
-      }
-
-      if (!aadhar) {
-        toast.error(t('fieldRequired', language));
-        return;
-      }
-
-      if (!phone) {
-        toast.error(t('fieldRequired', language));
+      if (!validateForm()) {
         return;
       }
 
@@ -374,11 +424,12 @@ function BasicInfo({ setData, setStep, data }) {
           </label>
           <input
             type="text"
-            className="form-control"
+            className={`form-control ${errors.name ? "is-invalid" : ""}`}
             placeholder={t('name', language)}
-            defaultValue={name}
-            onChange={(e) => setName(e.target.value)}
+            value={name || ""}
+            onChange={(e) => handleInputChange(setName, "name", e.target.value)}
           />
+          {errors.name && <div className="invalid-feedback">{errors.name}</div>}
         </div>
 
         <div className="col-sm-12 mb-3 col-lg-6">
@@ -387,11 +438,12 @@ function BasicInfo({ setData, setStep, data }) {
           </label>
           <input
             type="number"
-            className="form-control"
+            className={`form-control ${errors.age ? "is-invalid" : ""}`}
             placeholder={t('age', language)}
-            defaultValue={age}
-            onChange={(e) => setAge(e.target.value)}
+            value={age || ""}
+            onChange={(e) => handleInputChange(setAge, "age", e.target.value)}
           />
+          {errors.age && <div className="invalid-feedback">{errors.age}</div>}
         </div>
       </div>
 
@@ -401,15 +453,16 @@ function BasicInfo({ setData, setStep, data }) {
             {t('gender', language)} <span className="imp-mark">*</span>
           </label>
           <select
-            value={sex}
-            className="form-select form-select-lg"
-            onChange={(e) => setSex(e.target.value)}
+            value={sex || ""}
+            className={`form-select form-select-lg ${errors.sex ? "is-invalid" : ""}`}
+            onChange={(e) => handleInputChange(setSex, "sex", e.target.value)}
           >
             <option>{t('selectOption', language)}</option>
             <option value="male">{t('male', language)}</option>
             <option value="female">{t('female', language)}</option>
             <option value="others">{t('other', language)}</option>
           </select>
+          {errors.sex && <div className="invalid-feedback">{errors.sex}</div>}
         </div>
 
         <div className="col-lg-6 col-sm-12 mb-3">
@@ -417,9 +470,9 @@ function BasicInfo({ setData, setStep, data }) {
             {t('district', language)} <span className="imp-mark">*</span>
           </label>
           <select
-            value={district}
-            className="form-select form-select-lg"
-            onChange={(e) => setDistrict(e.target.value)}
+            value={district || ""}
+            className={`form-select form-select-lg ${errors.district ? "is-invalid" : ""}`}
+            onChange={(e) => handleInputChange(setDistrict, "district", e.target.value)}
           >
             <option>{t('selectOption', language)}</option>
             {districtKeys
@@ -428,6 +481,7 @@ function BasicInfo({ setData, setStep, data }) {
                 })
               : null}
           </select>
+          {errors.district && <div className="invalid-feedback">{errors.district}</div>}
         </div>
       </div>
 
@@ -437,11 +491,12 @@ function BasicInfo({ setData, setStep, data }) {
             {t('address', language)} <span className="imp-mark">*</span>
           </label>
           <textarea
-            value={address}
-            className="form-control"
-            onChange={(e) => setAddress(e.target.value)}
+            value={address || ""}
+            className={`form-control ${errors.address ? "is-invalid" : ""}`}
+            onChange={(e) => handleInputChange(setAddress, "address", e.target.value)}
             placeholder={t('address', language)}
           ></textarea>
+          {errors.address && <div className="invalid-feedback">{errors.address}</div>}
         </div>
 
         <div className="col-sm-12 mb-3 col-lg-6 ">
@@ -449,13 +504,14 @@ function BasicInfo({ setData, setStep, data }) {
             {t('aadharNumber', language)} <span className="imp-mark">*</span>
           </label>
           <input
-            value={aadhar}
+            value={aadhar || ""}
             name="aadhar"
             type="text"
-            className="form-control"
+            className={`form-control ${errors.aadhar ? "is-invalid" : ""}`}
             placeholder={t('aadharNumber', language)}
-            onChange={(e) => setAadhar(e.target.value)}
+            onChange={(e) => handleInputChange(setAadhar, "aadhar", e.target.value)}
           />
+          {errors.aadhar && <div className="invalid-feedback">{errors.aadhar}</div>}
         </div>
       </div>
 
@@ -466,17 +522,18 @@ function BasicInfo({ setData, setStep, data }) {
           </label>
           <input
             type="date"
-            className="form-control"
-            value={joiningDate}
-            onChange={(e) => setJoiningDate(e.target.value)}
+            className={`form-control ${errors.joiningDate ? "is-invalid" : ""}`}
+            value={joiningDate || ""}
+            onChange={(e) => handleInputChange(setJoiningDate, "joiningDate", e.target.value)}
           />
+          {errors.joiningDate && <div className="invalid-feedback">{errors.joiningDate}</div>}
         </div>
         <div className="col-sm-12 mb-3 col-lg-6">
           <label className="input-lebel">Discharge Date</label>
           <input
             type="date"
             className="form-control"
-            value={dischargeDate}
+            value={dischargeDate || ""}
             onChange={(e) => setDischargeDate(e.target.value)}
           />
         </div>
@@ -486,7 +543,7 @@ function BasicInfo({ setData, setStep, data }) {
         <div className="col-sm-12 mb-3 col-lg-6">
           <label className="input-lebel">{t('taluk', language)}</label>
           <input
-            value={taluk}
+            value={taluk || ""}
             type="text"
             className="form-control"
             placeholder={t('taluk', language)}
@@ -499,12 +556,13 @@ function BasicInfo({ setData, setStep, data }) {
             {t('phoneNumber', language)} <span className="imp-mark">*</span>
           </label>
           <input
-            value={phone}
+            value={phone || ""}
             type="tel"
-            className="form-control"
+            className={`form-control ${errors.phone ? "is-invalid" : ""}`}
             placeholder={t('phoneNumber', language)}
-            onChange={(e) => setPhone(e.target.value)}
+            onChange={(e) => handleInputChange(setPhone, "phone", e.target.value)}
           />
+          {errors.phone && <div className="invalid-feedback">{errors.phone}</div>}
         </div>
       </div>
 

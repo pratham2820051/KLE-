@@ -9,6 +9,7 @@ import { set_cptable } from "xlsx";
 import * as cptable from "xlsx/dist/cpexcel.full.mjs";
 import { printPatientPDF } from "../../utils/printPatient";
 import { formatPatientId } from "../../utils/patientId";
+import toast from "react-hot-toast";
 
 set_cptable(cptable);
 
@@ -17,6 +18,8 @@ function Patient({ setLoading, camp, patient, faculty }) {
   const { language } = useLanguage();
   const [searchQuery, setSearchQuery] = useState("");
   const [translatedPatients, setTranslatedPatients] = useState(null);
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
   // Function to translate text using Google Translate API
   const translateText = async (text, targetLang) => {
@@ -69,14 +72,35 @@ function Patient({ setLoading, camp, patient, faculty }) {
   };
 
   const downloadData = () => {
-    var obj = [...JSON.parse(JSON.stringify(patient))];
+    let listToDownload = patient ? [...patient] : [];
+
+    if (startDate || endDate) {
+      const start = startDate ? new Date(startDate) : null;
+      const end = endDate ? new Date(endDate) : null;
+      if (end) end.setHours(23, 59, 59, 999);
+
+      listToDownload = listToDownload.filter((p) => {
+        const pDateStr = p.joining_date || p.createdAt;
+        if (!pDateStr) return false;
+        const pDate = new Date(pDateStr);
+        if (start && pDate < start) return false;
+        if (end && pDate > end) return false;
+        return true;
+      });
+    }
+
+    if (listToDownload.length === 0) {
+      toast.error("No patient records found in the selected date range.");
+      return;
+    }
+
+    var obj = [...JSON.parse(JSON.stringify(listToDownload))];
 
     console.log(obj);
 
     for (const i of obj) {
       if (i.complaints && i.complaints.length !== 0) {
         i.drug = i?.complaints[0].drug;
-        i.age_of_first_use = i?.complaints[0].age_of_first_use;
         i.age_of_first_use = i?.complaints[0].age_of_first_use;
         i.frequency_last_30_days = i?.complaints[0].frequency_last_30_days;
         i.quantity_last_30_days = i?.complaints[0].quantity_last_30_days;
@@ -93,22 +117,10 @@ function Patient({ setLoading, camp, patient, faculty }) {
       delete i["_id"];
     }
 
-    // const download = (jsonArray, name, index) => {
-    // console.log(jsonArray)
-    // let djson = copy(obj)
-    // const invoiceAdder = parseInt(index) + parseInt(invoiceNumber)
-    // for (var j of djson) {
-    //   delete j["XCode"]
-    //   j["InvoiceNo"] = j["InvoiceNo"] + '-' + invoiceAdder
-    //   j["InvoiceDate"] = customDate
-    // }
     var worksheet = XLSX.utils.json_to_sheet(obj);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, worksheet);
-    XLSX.writeFile(wb, `patientdata.xlsx`);
-    // };
-
-    // console.log(obj)
+    XLSX.writeFile(wb, `patientdata_${startDate || 'all'}_to_${endDate || 'all'}.xlsx`);
   };
 
   const handleSearchChange = (e) => {
@@ -121,13 +133,29 @@ function Patient({ setLoading, camp, patient, faculty }) {
 
   const filteredPatients = patient ? patient.filter((data) => {
     if (!data || !data.name) return false;
+
+    // Apply Date Range filter if set
+    if (startDate || endDate) {
+      const start = startDate ? new Date(startDate) : null;
+      const end = endDate ? new Date(endDate) : null;
+      if (end) end.setHours(23, 59, 59, 999);
+
+      const pDateStr = data.joining_date || data.createdAt;
+      if (!pDateStr) return false;
+      const pDate = new Date(pDateStr);
+      if (start && pDate < start) return false;
+      if (end && pDate > end) return false;
+    }
+
     const translatedData = translatedPatients?.find(tp => tp._id === data._id) || data;
     const nameToSearch = (translatedData.translatedName || data.name || '');
     if (!nameToSearch) return false;
     const query = searchQuery.toLowerCase();
     if (searchQuery && !nameToSearch.toLowerCase().includes(query) &&
         !formatPatientId(data.patientId).toLowerCase().includes(query) &&
-        !String(data.patientId).includes(query)) return false;
+        !String(data.patientId).includes(query) &&
+        !(data.phone && data.phone.toLowerCase().includes(query)) &&
+        !(data.aadharNumber && data.aadharNumber.toLowerCase().includes(query))) return false;
     return true;
   }) : [];
 
@@ -147,6 +175,37 @@ function Patient({ setLoading, camp, patient, faculty }) {
         <button className="add-btn" onClick={handleAddPatient}>
           {t('addPatient', language)}
         </button>
+
+        <div className="date-filter-group">
+          <span>From:</span>
+          <input
+            type="date"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+          />
+        </div>
+
+        <div className="date-filter-group">
+          <span>To:</span>
+          <input
+            type="date"
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
+          />
+        </div>
+
+        {(startDate || endDate) && (
+          <button
+            className="edit-btn"
+            onClick={() => {
+              setStartDate("");
+              setEndDate("");
+            }}
+            style={{ padding: "8px 12px", borderColor: "#cbd5e1" }}
+          >
+            <i className="fas fa-times" style={{ marginRight: "6px" }}></i> Clear Dates
+          </button>
+        )}
 
         {/* <input
         type="text"

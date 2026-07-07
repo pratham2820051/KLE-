@@ -28,3 +28,42 @@
 .fa-times:hover {
   cursor: pointer;
 }
+
+.date-filter-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #64748b;
+  height: 42px;
+  transition: all 0.2s ease;
+
+  &:focus-within {
+    border-color: #003b7a;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(0, 59, 122, 0.1);
+  }
+
+  span {
+    font-weight: 600;
+    color: #475569;
+  }
+
+  input[type="date"] {
+    border: none;
+    background: transparent;
+    outline: none;
+    color: #0f172a;
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 0;
+  }
+}
+

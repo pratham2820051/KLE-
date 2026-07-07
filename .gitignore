@@ -1,0 +1,10 @@
+# System files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Main node_modules
+node_modules/

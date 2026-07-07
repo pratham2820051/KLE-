@@ -28,8 +28,48 @@ function BasicInfo5({ prevData, data, setData, setStep, setLoading }) {
   const [doctorClarification, setDoctorClarification] = useState("");
   const [followUpNotes, setFollowUpNotes] = useState("");
   const [childhoodExperience1, setChildhoodExperience1] = useState("");
-
   const { id } = useParams();
+
+  const validateFullData = (formData) => {
+    const missing = [];
+    
+    if (!formData.name || !formData.name.trim()) missing.push("Name");
+    
+    if (!formData.age) {
+      missing.push("Age");
+    } else {
+      const ageNum = Number(formData.age);
+      if (isNaN(ageNum) || ageNum <= 0 || ageNum > 120) {
+        missing.push("Valid Age (1-120)");
+      }
+    }
+    
+    if (!formData.sex || formData.sex === t('selectOption', language) || formData.sex === "Select Option") missing.push("Gender");
+    if (!formData.district || formData.district === t('selectOption', language) || formData.district === "Select Option") missing.push("District");
+    if (!formData.address || !formData.address.trim()) missing.push("Address");
+    
+    if (!formData.aadharNumber) {
+      missing.push("Aadhar Card");
+    } else {
+      const cleanAadhar = String(formData.aadharNumber).replace(/\s/g, "");
+      if (!/^\d{12}$/.test(cleanAadhar)) {
+        missing.push("Valid 12-digit Aadhar Card");
+      }
+    }
+    
+    if (!formData.joining_date) missing.push("Joining Date");
+    
+    if (!formData.phone) {
+      missing.push("Phone Number");
+    } else {
+      const cleanPhone = String(formData.phone).replace(/\D/g, "");
+      if (cleanPhone.length !== 10) {
+        missing.push("Valid 10-digit Phone Number");
+      }
+    }
+    
+    return missing;
+  };
 
   const submit = async () => {
     setLoading(true);
@@ -56,6 +96,14 @@ function BasicInfo5({ prevData, data, setData, setStep, setLoading }) {
     const newData = { ...data, ...counselorData };
     setData(newData);
     console.log("New Data : ", newData);
+
+    const missing = validateFullData(newData);
+    if (missing.length > 0) {
+      toast.error(`Please correct required fields in Step 1: ${missing.join(", ")}`);
+      setStep(1);
+      setLoading(false);
+      return;
+    }
 
     //////////////////////Authentication Check//////////////////////
 
@@ -141,6 +189,14 @@ function BasicInfo5({ prevData, data, setData, setStep, setLoading }) {
     const newData = { ...data, ...counselorData };
     setData(newData);
     console.log("Updated Data : ", newData);
+
+    const missing = validateFullData(newData);
+    if (missing.length > 0) {
+      toast.error(`Please correct required fields in Step 1: ${missing.join(", ")}`);
+      setStep(1);
+      setLoading(false);
+      return;
+    }
 
     const auth = localStorage.getItem("auth") || localStorage.getItem("facultyAuth");
 

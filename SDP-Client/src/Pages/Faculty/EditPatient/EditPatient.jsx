@@ -10,6 +10,7 @@ import Loader from "../../../component/Loader/Loader";
 import axios from "axios";
 import { ADD_PATIENT, GET_PATIENT_USER } from "../../../utils/apiConstant";
 import { printPatientPDF } from "../../../utils/printPatient";
+import FollowUpHistory from "../../../component/FacultyPanel/AddPatient/FollowUpHistory";
 
 const tabList = [{
   name: "basicInfo",
@@ -31,6 +32,10 @@ const tabList = [{
   name: "counsellorSection",
   step: 5
 },
+{
+  name: "followUpHistory",
+  step: 6
+}
 ]
 
 function EditPatient() {
@@ -131,6 +136,7 @@ function EditPatient() {
       {step === 3 ? <BasicInfo3 prevData={true} data={data} setData={setData} setStep={setStep} setLoading={setLoading} /> : null}
       {step === 4 ? <BasicInfo4 prevData={true} data={data} setData={setData} setStep={setStep} setLoading={setLoading} /> : null}
       {step === 5 ? <BasicInfo5 prevData={true} data={data} setData={setData} setStep={setStep} setLoading={setLoading} /> : null}
+      {step === 6 ? <FollowUpHistory data={data} setData={setData} setLoading={setLoading} /> : null}
 
 
     </div>

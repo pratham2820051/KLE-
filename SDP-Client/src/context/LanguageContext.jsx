@@ -10,9 +10,20 @@ export const LanguageProvider = ({ children }) => {
     return localStorage.getItem('sdp-language') || 'en';
   });
 
-  // Save language to localStorage whenever it changes
+  // Save language to localStorage whenever it changes and trigger Google Translate
   useEffect(() => {
     localStorage.setItem('sdp-language', language);
+
+    const tryTranslate = (attempts = 0) => {
+      const select = document.querySelector('.goog-te-combo');
+      if (select) {
+        select.value = language;
+        select.dispatchEvent(new Event('change'));
+      } else if (attempts < 15) {
+        setTimeout(() => tryTranslate(attempts + 1), 300);
+      }
+    };
+    tryTranslate();
   }, [language]);
 
   const changeLanguage = (newLanguage) => {

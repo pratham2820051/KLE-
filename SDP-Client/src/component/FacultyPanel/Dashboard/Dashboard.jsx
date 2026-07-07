@@ -57,7 +57,9 @@ function Dashboard() {
     const matchesSearch = (
       data.name.toLowerCase().includes(query) ||
       formatPatientId(data.patientId).toLowerCase().includes(query) ||
-      String(data.patientId).includes(query)
+      String(data.patientId).includes(query) ||
+      (data.phone && data.phone.toLowerCase().includes(query)) ||
+      (data.aadharNumber && data.aadharNumber.toLowerCase().includes(query))
     );
     const matchesStatus =
       statusFilter === "all" ||
