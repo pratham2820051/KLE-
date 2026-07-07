@@ -582,6 +582,12 @@ patientSchema.post("findOneAndUpdate", function (doc) {
   decryptDoc(doc);
 });
 
+// ── Indexes for fast queries ─────────────────────────────────────────────────
+patientSchema.index({ faculty: 1 });        // getPatientByUser
+patientSchema.index({ allocated: 1 });      // getUnallocatedPatients
+patientSchema.index({ campId: 1 });         // camp-based lookups
+patientSchema.index({ patientId: 1 }, { unique: true, sparse: true });
+
 // ── Compile model (always AFTER hooks are registered) ───────────────────────
 const Patient = mongoose.model("Patient", patientSchema);
 

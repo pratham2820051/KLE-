@@ -1,6 +1,7 @@
 # System files
 .DS_Store
 Thumbs.db
+__MACOSX/
 
 # Logs
 *.log
@@ -8,3 +9,7 @@ npm-debug.log*
 
 # Main node_modules
 node_modules/
+
+# Environment files
+.env
+.env.*

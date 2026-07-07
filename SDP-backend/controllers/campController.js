@@ -1,128 +1,67 @@
 import Camp from "../models/campModel.js";
 
 const registerCamp = async (req, res) => {
-  const { name, locationId, faculty, startDate, endDate } = req.body;
+  try {
+    const { name, locationId, faculty, startDate, endDate } = req.body;
 
-  if (!name || !locationId || !faculty) {
-    return res.status(400).json({
-      code: 400,
-      success: false,
-      message: "Bad Request",
-    });
-  }
+    if (!name || !locationId || !faculty) {
+      return res.status(400).json({ code: 400, success: false, message: "name, locationId and faculty are required" });
+    }
 
-  const obj = {
-    name: name,
-    locationId: locationId,
-    faculty: faculty,
-    startDate: startDate,
-    endDate: endDate,
-  };
+    const camp = await Camp.create({ name, locationId, faculty, startDate, endDate });
 
-  const camp = await Camp.create(obj);
-
-  if (camp) {
-    return res.status(200).json({
-      code: 200,
-      success: true,
-      message: "camp created successfully",
-      camp,
-    });
-  } else {
-    return res.status(500).json({
-      code: 500,
-      success: false,
-      message: "error creating camp",
-    });
+    return res.status(201).json({ code: 201, success: true, message: "Camp created successfully", camp });
+  } catch (error) {
+    console.error("registerCamp error:", error.message);
+    return res.status(500).json({ code: 500, success: false, message: "Error creating camp" });
   }
 };
 
 const updateCamp = async (req, res) => {
-  const { id } = req.params;
+  try {
+    const { id } = req.params;
+    const { name, locationId, faculty, startDate, endDate } = req.body;
 
-  const { name, locationId, faculty, startDate, endDate } = req.body;
+    const camp = await Camp.findByIdAndUpdate(
+      id,
+      { name, locationId, faculty, startDate, endDate },
+      { new: true, runValidators: true }
+    );
 
-  const obj = {
-    name: name,
-    locationId: locationId,
-    startDate: startDate,
-    endDate: endDate,
-    faculty,
-  };
+    if (!camp) {
+      return res.status(404).json({ code: 404, success: false, message: "Camp not found" });
+    }
 
-  const camp = await Camp.findOneAndUpdate(
-    {
-      _id: id,
-    },
-    obj
-  );
-
-  if (camp) {
-    return res.status(200).json({
-      code: 200,
-      success: true,
-      message: "camp created successfully",
-      camp,
-    });
-  } else {
-    return res.status(500).json({
-      code: 500,
-      success: false,
-      message: "error creating camp",
-    });
+    return res.status(200).json({ code: 200, success: true, message: "Camp updated successfully", camp });
+  } catch (error) {
+    console.error("updateCamp error:", error.message);
+    return res.status(500).json({ code: 500, success: false, message: "Error updating camp" });
   }
 };
 
 const getAllCamp = async (req, res) => {
-  const camp = await Camp.find();
-
-  if (camp) {
-    return res.status(200).json({
-      code: 200,
-      success: true,
-      message: "Camp get successfully",
-      data: camp,
-    });
-  } else {
-    return res.status(500).json({
-      code: 500,
-      success: false,
-      message: "Error getting camps",
-    });
+  try {
+    const camps = await Camp.find().lean();
+    return res.status(200).json({ code: 200, success: true, message: "Camps fetched successfully", data: camps });
+  } catch (error) {
+    console.error("getAllCamp error:", error.message);
+    return res.status(500).json({ code: 500, success: false, message: "Error getting camps" });
   }
 };
 
+// Returns camps belonging to the logged-in user
 const getCampByUser = async (req, res) => {
-  // const user = req.user.id;
+  try {
+    const userId = req.user._id;
 
-  const camp = await Camp.find();
+    // Query directly in DB — no JS-side filtering loop
+    const camps = await Camp.find({ faculty: userId }).lean();
 
-  console.log(camp);
-
-  if (!camp) {
-    return res.status(500).json({
-      code: 500,
-      success: false,
-      message: "error getting camps",
-    });
+    return res.status(200).json({ code: 200, success: true, message: "Camps fetched successfully", data: camps });
+  } catch (error) {
+    console.error("getCampByUser error:", error.message);
+    return res.status(500).json({ code: 500, success: false, message: "Error getting camps" });
   }
-
-  const campArray = [];
-
-  for (var cp of camp) {
-    for (var ct of cp.faculty) {
-      // if (ct == user) {
-      campArray.push(cp);
-      // }
-    }
-  }
-
-  return res.status(200).json({
-    code: 200,
-    success: true,
-    message: "Camps get successful",
-    data: campArray,
-  });
 };
 
 export { getCampByUser, registerCamp, getAllCamp, updateCamp };

@@ -26,6 +26,9 @@ const campSchema = mongoose.Schema(
 );
 
 
+campSchema.index({ faculty: 1 });      // getCampByUser
+campSchema.index({ locationId: 1 });   // location-based lookups
+
 const Camp = mongoose.model("Camp", campSchema);
 
 export default Camp;

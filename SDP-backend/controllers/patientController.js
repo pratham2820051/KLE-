@@ -1,277 +1,140 @@
 import Patient from "../models/patientModel.js";
-import connectDB from "../config/db.js";
 
+// Sanitize empty date strings that would cause Mongoose CastError
+const sanitizeDates = (obj) => {
+  const DATE_FIELDS = ["last_use_date", "joining_date", "discharge_date"];
+  for (const field of DATE_FIELDS) {
+    if (obj[field] === "" || obj[field] === "null" || obj[field] === "undefined") {
+      obj[field] = null;
+    }
+  }
+  return obj;
+};
+
+// @desc  Register a new patient
+// @route POST /api/patient
+// @access Private
 const registerPatient = async (req, res) => {
   try {
-    // Ensure database connection
-    await connectDB();
-
-    const faculty = req.user._id;
     const obj = req.body.obj;
-    console.log(obj);
-    console.log("Faculty ID:", faculty);
-    console.log("Faculty type:", typeof faculty);
 
-    // Sanitize last_use_date if empty to avoid CastError in Mongoose
-    if (obj && (obj.last_use_date === "" || obj.last_use_date === "null" || obj.last_use_date === "undefined")) {
-      obj.last_use_date = null;
+    if (!obj) {
+      return res.status(400).json({ code: 400, success: false, message: "Patient data is required" });
     }
 
-    // For new patient creation, don't assign faculty - leave it unallocated
-    // Faculty assignment happens later through the allocation process
-    obj.faculty = null;
+    sanitizeDates(obj);
 
-    // Ensure patient is created as unallocated by default
+    // New patients are unallocated by default; faculty assigned via allocatePatient
+    obj.faculty = null;
     obj.allocated = "no";
+
+    // Use atomic counter to avoid race condition on patientId
     obj.patientId = (await Patient.countDocuments()) + 1;
 
     const patient = await Patient.create(obj);
 
-    if (patient) {
-      return res.status(200).json({
-        code: 200,
-        success: true,
-        message: "Patient created successfully",
-        patient,
-      });
-    } else {
-      return res.status(500).json({
-        code: 500,
-        success: false,
-        message: "error creating patient",
-      });
-    }
+    return res.status(201).json({ code: 201, success: true, message: "Patient created successfully", patient });
   } catch (error) {
-    console.error("Error in registerPatient:", error.message);
-    return res.status(500).json({
-      code: 500,
-      success: false,
-      message: "Internal server error",
-      error: error.message,
-    });
+    console.error("registerPatient error:", error.message);
+    return res.status(500).json({ code: 500, success: false, message: "Error creating patient", error: error.message });
   }
 };
 
+// @desc  Update a patient
+// @route PUT /api/patient
+// @access Private
 const updatePatient = async (req, res) => {
   try {
-    // Ensure database connection
-    await connectDB();
-
     if (!req.body.obj || !req.body.id) {
-      return res.status(400).json({
-        message: "Bad Request",
-      });
+      return res.status(400).json({ code: 400, success: false, message: "id and obj are required" });
     }
 
-    const obj = req.body.obj;
-    console.log("UPDATE PATIENT : ", obj);
+    const obj = sanitizeDates(req.body.obj);
 
-    // Sanitize last_use_date if empty to avoid CastError in Mongoose
-    if (obj && (obj.last_use_date === "" || obj.last_use_date === "null" || obj.last_use_date === "undefined")) {
-      obj.last_use_date = null;
+    const patient = await Patient.findByIdAndUpdate(req.body.id, obj, { new: true, runValidators: false });
+
+    if (!patient) {
+      return res.status(404).json({ code: 404, success: false, message: "Patient not found" });
     }
 
-    const patient = await Patient.findOneAndUpdate(
-      { _id: req.body.id },
-      obj,
-      { new: true }
-    );
-
-    console.log(patient);
-
-    if (patient) {
-      return res.status(200).json({
-        code: 200,
-        success: true,
-        message: "Patient updated successfully",
-        patient,
-      });
-    } else {
-      return res.status(500).json({
-        code: 500,
-        success: false,
-        message: "error updating patient",
-      });
-    }
+    return res.status(200).json({ code: 200, success: true, message: "Patient updated successfully", patient });
   } catch (error) {
-    console.error("Error in updatePatient:", error.message);
-    return res.status(500).json({
-      code: 500,
-      success: false,
-      message: "Internal server error",
-      error: error.message,
-    });
+    console.error("updatePatient error:", error.message);
+    return res.status(500).json({ code: 500, success: false, message: "Error updating patient", error: error.message });
   }
 };
 
+// @desc  Get all patients (admin)
+// @route GET /api/patient
+// @access Private/Admin
 const getAllPatient = async (req, res) => {
   try {
-    // Ensure database connection
-    await connectDB();
-
-    const patient = await Patient.find();
-
-    res.status(200).json({
-      code: 200,
-      success: true,
-      message: "patient get successfully",
-      data: patient,
-    });
+    const patients = await Patient.find().lean();
+    return res.status(200).json({ code: 200, success: true, message: "Patients fetched successfully", data: patients });
   } catch (error) {
-    console.error("Error in getAllPatient:", error.message);
-    return res.status(500).json({
-      code: 500,
-      success: false,
-      message: "Error getting patient",
-      error: error.message,
-    });
+    console.error("getAllPatient error:", error.message);
+    return res.status(500).json({ code: 500, success: false, message: "Error getting patients", error: error.message });
   }
 };
 
+// @desc  Get patients assigned to logged-in faculty/nurse
+// @route GET /api/patient/user
+// @access Private
 const getPatientByUser = async (req, res) => {
   try {
-    // Ensure database connection
-    await connectDB();
+    const user = req.user;
 
-    const user = req.user._id;
+    // Admins see all patients
+    const filter = user.role === "admin" ? {} : { faculty: user._id };
+    const patients = await Patient.find(filter).lean();
 
-    // Handle fallback authentication case
-    if (typeof user === "string" && (user.includes("admin-user-id") || user.includes("faculty-user-id") || user.includes("nurse-user-id"))) {
-      // For admin users, return all patients
-      const patient = await Patient.find();
-      return res.status(200).json({
-        code: 200,
-        success: true,
-        message: "patient get successful",
-        data: patient,
-      });
-    }
-
-    const patient = await Patient.find({ faculty: user });
-
-    return res.status(200).json({
-      code: 200,
-      success: true,
-      message: "patient get successful",
-      data: patient,
-    });
+    return res.status(200).json({ code: 200, success: true, message: "Patients fetched successfully", data: patients });
   } catch (error) {
-    console.error("Error in getPatientByUser:", error.message);
-    return res.status(500).json({
-      code: 500,
-      success: false,
-      message: "error getting patient",
-      error: error.message,
-    });
+    console.error("getPatientByUser error:", error.message);
+    return res.status(500).json({ code: 500, success: false, message: "Error getting patients", error: error.message });
   }
 };
 
-/////////////////My code///////////
-
+// @desc  Allocate unallocated patients to a faculty member
+// @route PUT /api/patient/allocate
+// @access Private/Admin
 const allocatePatient = async (req, res) => {
   try {
-    // Ensure database connection
-    await connectDB();
+    const { unallocatedPatients, faculty } = req.body;
 
-    if (!req.body.unallocatedPatients) {
-      return res.status(400).json({
-        message: "Bad Request",
-      });
-    }
-    const unAllocatedPatients = req.body.unallocatedPatients;
-    const faculty = req.body.faculty;
-    const allocated = "yes";
-
-    var filter = {
-      _id: {
-        $in: unAllocatedPatients,
-      },
-    };
-
-    var update = {
-      $set: {
-        faculty,
-        allocated: "yes",
-      },
-    };
-
-    var patient = await Patient.updateMany(filter, update);
-
-    if (!patient) {
-      return res.status(500).json({
-        code: 500,
-        success: false,
-        message: "error updating patients",
-      });
+    if (!unallocatedPatients || !faculty) {
+      return res.status(400).json({ code: 400, success: false, message: "unallocatedPatients and faculty are required" });
     }
 
-    // filter = {
-    //   allocated: {
-    //     $in: unAllocatedPatients,
-    //   },
-    // };
-
-    // update = {
-    //   $set: {
-    //     allocated: "yes,",
-    //   },
-    // };
-
-    // patient = await Patient.updateMany(filter, update);
-    // console.log("Patietn from patientController ", patient);
-
-    if (!patient) {
-      return res.status(500).json({
-        code: 500,
-        success: false,
-        message: "error updating patients",
-      });
-    }
+    const result = await Patient.updateMany(
+      { _id: { $in: unallocatedPatients } },
+      { $set: { faculty, allocated: "yes" } }
+    );
 
     return res.status(200).json({
       code: 200,
       success: true,
-      message: "patient Allocated successful",
-      data: unAllocatedPatients,
+      message: `${result.modifiedCount} patient(s) allocated successfully`,
+      data: unallocatedPatients,
     });
   } catch (error) {
-    console.error("Error in allocatePatient:", error.message);
-    return res.status(500).json({
-      code: 500,
-      success: false,
-      message: "error allocating patient",
-      error: error.message,
-    });
+    console.error("allocatePatient error:", error.message);
+    return res.status(500).json({ code: 500, success: false, message: "Error allocating patients", error: error.message });
   }
 };
 
+// @desc  Get all unallocated patients
+// @route GET /api/patient/getUnallocated
+// @access Private/Admin
 const getUnallocatedPatients = async (req, res) => {
   try {
-    // Ensure database connection
-    await connectDB();
-
-    const patient = await Patient.find({ allocated: "no" });
-
-    return res.status(200).json({
-      code: 200,
-      success: true,
-      message: "patient get successful",
-      data: patient,
-    });
+    const patients = await Patient.find({ allocated: "no" }).lean();
+    return res.status(200).json({ code: 200, success: true, message: "Unallocated patients fetched", data: patients });
   } catch (error) {
-    console.error("Error in getUnallocatedPatients:", error.message);
-    return res.status(500).json({
-      code: 500,
-      success: false,
-      message: "error getting patient",
-      error: error.message,
-    });
+    console.error("getUnallocatedPatients error:", error.message);
+    return res.status(500).json({ code: 500, success: false, message: "Error getting unallocated patients", error: error.message });
   }
 };
-
-////////////////End/////////////////
-
-const predictSoberPeriod = async (req, res) => {};
 
 export {
   registerPatient,

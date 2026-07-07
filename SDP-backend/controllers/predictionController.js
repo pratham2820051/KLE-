@@ -230,10 +230,8 @@ async function riskPrediction(req, res, next) {
     let prediction;
     if (riskScore >= 4) {
       prediction = 4; // Very High Risk
-    } else if (riskScore >= 2.5) {
-      prediction = 3; // High Risk
     } else {
-      prediction = 3; // Default to High Risk for now
+      prediction = 3; // High Risk
     }
 
     console.log("Mock Predicted Risk Score:", riskScore, "Level:", riskLevelMap[prediction]);
